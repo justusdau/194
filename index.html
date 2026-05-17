@@ -1,1006 +1,1242 @@
 <!DOCTYPE html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="X – Bildende Künstlerin. Portfolio, Ausstellungen und Kontakt.">
-  <meta name="keywords" content="Kunst, Künstlerin, Portfolio, Ausstellungen, X">
-  <meta property="og:title" content="X – Künstlerin">
-  <meta property="og:description" content="Bildende Künstlerin. Portfolio, Ausstellungen und Kontakt.">
-  <meta property="og:url" content="https://meinewebsite.de">
-  <title>X — Künstlerin</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=4.0">
+<title>🌿 Garten 194</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600&family=Lato:wght@300;400;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --accent:#2d6a1f;
+  --panel-bg:rgba(255,253,248,0.98);
+  --text-dark:#2c1a0e;--text-mid:#5a4030;--text-muted:#8a7060;
+  --border:rgba(139,105,20,0.22);
+}
+body{font-family:'Lato',sans-serif;background:#3a4a32;color:var(--text-dark);overflow:hidden}
+#app{width:100%;height:100vh;display:flex;flex-direction:column}
 
-    :root {
-      --cream: #F5F0E8;
-      --ink:   #1A1714;
-      --warm:  #8B6F47;
-      --gold:  #C4A35A;
-      --light: #EDE8DE;
-      --muted: #7A7269;
-      --serif: 'Cormorant Garamond', Georgia, serif;
-      --sans:  'DM Sans', sans-serif;
-    }
+#toolbar{
+  background:rgba(255,252,245,0.97);border-bottom:1px solid var(--border);
+  padding:9px 14px;display:flex;gap:10px;align-items:center;z-index:100;flex-shrink:0
+}
+#toolbar h1{font-family:'Playfair Display',serif;font-size:17px;font-weight:600;color:var(--accent);margin-right:6px;white-space:nowrap}
+#search-wrap{position:relative;flex:1;max-width:400px}
+#search-wrap input{
+  width:100%;padding:8px 14px 8px 34px;border:1px solid var(--border);border-radius:22px;
+  font-size:14px;background:#fffdf5;color:var(--text-dark);outline:none;font-family:'Lato',sans-serif
+}
+#search-wrap input:focus{border-color:var(--accent);box-shadow:0 0 0 3px rgba(45,106,31,.1)}
+#search-wrap .si{position:absolute;left:12px;top:50%;transform:translateY(-50%);color:var(--text-muted);font-size:14px}
 
-    html { scroll-behavior: smooth; font-size: 16px; }
+/* === GARDEN VIEW === */
+#garden-wrap{
+  flex:1;position:relative;overflow:hidden;cursor:grab;
+  background:#5a7a4a;
+  background-image:
+    radial-gradient(circle at 30% 40%, rgba(140,180,90,.18) 0%, transparent 50%),
+    radial-gradient(circle at 70% 60%, rgba(90,130,60,.15) 0%, transparent 50%);
+}
+#garden-wrap:active{cursor:grabbing}
+#garden-canvas{position:absolute;transform-origin:0 0;will-change:transform}
 
-    body {
-      background: var(--cream);
-      color: var(--ink);
-      font-family: var(--sans);
-      font-weight: 300;
-      line-height: 1.7;
-      overflow-x: hidden;
-    }
+/* === SVG BACKGROUND STYLING - inject natural colors via CSS === */
+#bgsvg{display:block;filter:drop-shadow(0 4px 20px rgba(0,0,0,.25))}
 
-    /* ── CURSOR ── */
-    body { cursor: none; }
-    #cursor {
-      position: fixed; width: 10px; height: 10px;
-      border-radius: 50%; background: var(--gold);
-      pointer-events: none; z-index: 9999;
-      transition: transform .15s ease, opacity .2s;
-      transform: translate(-50%, -50%);
-    }
-    #cursor-ring {
-      position: fixed; width: 36px; height: 36px;
-      border-radius: 50%; border: 1px solid var(--gold);
-      pointer-events: none; z-index: 9998;
-      transition: transform .35s ease, width .2s, height .2s, opacity .2s;
-      transform: translate(-50%, -50%);
-      opacity: 0.5;
-    }
-    a:hover ~ #cursor, button:hover ~ #cursor { transform: translate(-50%,-50%) scale(2); }
+/* Hide all scale text and the white background rect */
+#bgsvg #rect2,
+#bgsvg [id^="rect11"],
+#bgsvg [id^="rect13"]:not([id="rect133"]):not([id="rect134"]):not([id="rect139"]):not([id="rect138"]),
+#bgsvg [id="rect133"],
+#bgsvg [id="rect134"]{display:none}
 
-    /* ── NOISE OVERLAY ── */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
-      pointer-events: none; z-index: 0; opacity: 0.4;
-    }
+/* Garden outer frame — earthy boundary */
+#bgsvg #aussenrahmen{
+  fill:#9fc97a !important;
+  stroke:#3e2c14 !important;
+  stroke-width:2 !important;
+}
 
-    /* ── NAV ── */
-    nav {
-      position: fixed; top: 0; left: 0; right: 0;
-      z-index: 100;
-      padding: 1.5rem 3rem;
-      display: flex; align-items: center; justify-content: space-between;
-      background: rgba(245,240,232,0.85);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      border-bottom: 1px solid rgba(196,163,90,0.2);
-      transition: padding .3s;
-    }
-    nav.scrolled { padding: 1rem 3rem; }
-    .nav-logo {
-      font-family: var(--serif);
-      font-size: 1.5rem;
-      font-weight: 300;
-      letter-spacing: 0.08em;
-      color: var(--ink);
-      text-decoration: none;
-      font-style: italic;
-    }
-    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
-    .nav-links a {
-      font-family: var(--sans);
-      font-size: 0.8rem;
-      font-weight: 400;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--muted);
-      text-decoration: none;
-      position: relative;
-      transition: color .25s;
-    }
-    .nav-links a::after {
-      content: ''; position: absolute; bottom: -3px; left: 0;
-      width: 0; height: 1px; background: var(--gold);
-      transition: width .3s ease;
-    }
-    .nav-links a:hover, .nav-links a.active { color: var(--ink); }
-    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+/* === BED FILLS === */
+#bgsvg #Kr__uterbeet{
+  fill:#b89968 !important;
+  stroke:#7d5e3a !important;
+  stroke-width:1.2 !important;
+}
+#bgsvg #H__gelbeet{
+  fill:#a08055 !important;
+  stroke:#5a3e1f !important;
+  stroke-width:1.2 !important;
+}
+#bgsvg #Gem__sebeet{
+  fill:#a88860 !important;
+  stroke:#5a3e1f !important;
+  stroke-width:1.2 !important;
+}
+#bgsvg #path151{
+  fill:#a88860 !important;
+  stroke:#5a3e1f !important;
+  stroke-width:1.2 !important;
+}
+#bgsvg #path137{
+  fill:#a88860 !important;
+  stroke:#5a3e1f !important;
+  stroke-width:1.2 !important;
+}
+#bgsvg #Beet_,
+#bgsvg #Beet_unten{
+  fill:#a88860 !important;
+  stroke:#7d5e3a !important;
+  stroke-width:1.5 !important;
+  stroke-dasharray:none !important;
+}
+#bgsvg #Totholzecke{
+  fill:#5a3e1f !important;
+  stroke:#2a1808 !important;
+}
 
-    /* Hamburger (mobile) */
-    .nav-burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; }
-    .nav-burger span { display: block; width: 22px; height: 1px; background: var(--ink); transition: .3s; }
+/* Compost */
+#bgsvg #kompost rect{
+  fill:#4a3018 !important;
+  stroke:#2a1808 !important;
+}
+#bgsvg #kompost text{
+  fill:#ffeec0 !important;
+  font-weight:700 !important;
+}
 
-    /* ── SECTIONS ── */
-    section { display: none; }
-    section.active { display: block; }
+/* IBC Container - water tank */
+#bgsvg #IBC_Container{
+  fill:#7090a8 !important;
+  stroke:#3e5a70 !important;
+  stroke-width:1.2 !important;
+}
 
-    /* ── HERO ── */
-    #home {
-      min-height: 100vh;
-      display: flex; flex-direction: column;
-      justify-content: flex-end;
-      padding: 0 3rem 5rem;
-      position: relative;
-      overflow: hidden;
-    }
-    .hero-bg {
-      position: absolute; inset: 0;
-      background:
-        radial-gradient(ellipse 60% 80% at 70% 40%, rgba(196,163,90,0.12) 0%, transparent 70%),
-        radial-gradient(ellipse 40% 60% at 20% 80%, rgba(139,111,71,0.08) 0%, transparent 60%);
-    }
-    .hero-line {
-      position: absolute; top: 0; left: 50%;
-      width: 1px; height: 0; background: var(--gold);
-      animation: lineDown 1.4s ease forwards .3s;
-    }
-    @keyframes lineDown { to { height: 35%; } }
+/* Buildings - Terrasse */
+#bgsvg #rect92{
+  fill:#c4a47a !important;
+  stroke:#7d5e3a !important;
+  stroke-width:1.5 !important;
+}
 
-    .hero-eyebrow {
-      font-size: 0.72rem; letter-spacing: 0.2em;
-      text-transform: uppercase; color: var(--gold);
-      margin-bottom: 1.5rem;
-      opacity: 0; animation: fadeUp .8s ease forwards .8s;
-    }
-    .hero-title {
-      font-family: var(--serif);
-      font-size: clamp(4rem, 10vw, 9rem);
-      font-weight: 300;
-      line-height: 0.92;
-      letter-spacing: -0.02em;
-      margin-bottom: 2rem;
-      opacity: 0; animation: fadeUp .9s ease forwards 1s;
-    }
-    .hero-title em { font-style: italic; color: var(--warm); display: block; }
-    .hero-sub {
-      font-size: 1rem; color: var(--muted); max-width: 400px;
-      margin-bottom: 3rem;
-      opacity: 0; animation: fadeUp .8s ease forwards 1.2s;
-    }
-    .hero-cta {
-      display: inline-flex; align-items: center; gap: 1rem;
-      font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase;
-      color: var(--ink); text-decoration: none;
-      opacity: 0; animation: fadeUp .8s ease forwards 1.4s;
-    }
-    .hero-cta::after {
-      content: ''; display: block; width: 48px; height: 1px; background: var(--gold);
-      transition: width .4s;
-    }
-    .hero-cta:hover::after { width: 80px; }
+/* Schuppen */
+#bgsvg #Schuppen{
+  fill:#9c6e42 !important;
+  stroke:#3e2c14 !important;
+  stroke-width:1.5 !important;
+}
 
-    .hero-scroll {
-      position: absolute; right: 3rem; bottom: 4rem;
-      writing-mode: vertical-lr; font-size: 0.65rem;
-      letter-spacing: 0.2em; text-transform: uppercase;
-      color: var(--muted); display: flex; align-items: center; gap: 12px;
-      opacity: 0; animation: fadeIn 1s ease forwards 2s;
-    }
-    .hero-scroll::before {
-      content: ''; display: block; width: 1px; height: 40px; background: var(--gold);
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+/* Dashed inner lines should be subtle */
+#bgsvg #path148,
+#bgsvg #path150{
+  stroke:#6a4828 !important;
+  stroke-width:0.7 !important;
+  opacity:0.4 !important;
+  fill:none !important;
+}
 
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(30px); }
-      to   { opacity: 1; transform: translateY(0); }
-    }
-    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+/* Tree/shrub circles - keep but style them */
+#bgsvg circle[id="Pflaume"],
+#bgsvg circle[id="Pfirsich"],
+#bgsvg circle[id="Birne"],
+#bgsvg circle[id="Kirsche"],
+#bgsvg circle[id="Flieder"],
+#bgsvg circle[id="baumstumpf"],
+#bgsvg ellipse[id="Rhodendron"],
+#bgsvg ellipse[id="Kornelkirsche"],
+#bgsvg ellipse[id="Zierquitte"],
+#bgsvg ellipse[id="Par__ckenstrauch"],
+#bgsvg ellipse[id="Holunder"],
+#bgsvg ellipse[id="Szchuanpeffer"],
+#bgsvg circle[id="Berberitze"],
+#bgsvg circle[id="Pfingstrose"]{
+  display:none !important;
+}
 
-    /* ── PORTFOLIO ── */
-    #portfolio { padding: 8rem 3rem 6rem; min-height: 100vh; }
-    .section-header { margin-bottom: 4rem; }
-    .section-number {
-      font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
-      color: var(--gold); margin-bottom: .6rem;
-    }
-    .section-title {
-      font-family: var(--serif);
-      font-size: clamp(2.5rem, 5vw, 4rem);
-      font-weight: 300; font-style: italic;
-    }
-    .section-sub {
-      font-size: 0.88rem; color: var(--muted);
-      margin-top: .6rem;
-    }
+/* Text labels */
+#bgsvg text{font-family:'Playfair Display', serif !important; fill:#3e2c14 !important;}
+#bgsvg #text92,
+#bgsvg #text96{
+  fill:#3e2c14 !important;
+  font-size:18px !important;
+  font-weight:600 !important;
+  font-style:italic !important;
+}
 
-    .filter-bar {
-      display: flex; gap: 1rem; flex-wrap: wrap;
-      margin-bottom: 3rem;
-    }
-    .filter-btn {
-      font-family: var(--sans); font-size: 0.75rem;
-      letter-spacing: 0.1em; text-transform: uppercase;
-      padding: .45rem 1.2rem;
-      border: 1px solid rgba(196,163,90,0.4);
-      background: transparent; color: var(--muted);
-      border-radius: 999px; cursor: pointer;
-      transition: all .25s;
-    }
-    .filter-btn:hover, .filter-btn.active {
-      background: var(--gold); border-color: var(--gold);
-      color: var(--cream);
-    }
+/* Gate */
+#bgsvg #eingang text,
+#bgsvg #tor text{fill:#fff !important; font-weight:600 !important;}
+#bgsvg #eingang line{stroke:#1f4a2a !important;}
+#bgsvg #tor rect{fill:#1f4a2a !important; stroke:#0a2818 !important;}
 
-    .portfolio-grid {
-      display: grid;
-      grid-template-columns: repeat(12, 1fr);
-      gap: 1.5rem;
-    }
-    .portfolio-item {
-      position: relative; overflow: hidden;
-      background: var(--light);
-      cursor: pointer;
-      transition: transform .4s ease;
-    }
-    .portfolio-item:hover { transform: translateY(-4px); }
-    .portfolio-item:nth-child(1) { grid-column: span 7; grid-row: span 2; }
-    .portfolio-item:nth-child(2) { grid-column: span 5; }
-    .portfolio-item:nth-child(3) { grid-column: span 5; }
-    .portfolio-item:nth-child(4) { grid-column: span 4; }
-    .portfolio-item:nth-child(5) { grid-column: span 4; }
-    .portfolio-item:nth-child(6) { grid-column: span 4; }
-    .portfolio-item:nth-child(7) { grid-column: span 6; }
-    .portfolio-item:nth-child(8) { grid-column: span 6; }
+/* Yellow path - more vibrant */
+#bgsvg #hauptweg{
+  stroke:#e8c850 !important;
+  stroke-width:14 !important;
+  opacity:0.92 !important;
+}
 
-    .portfolio-img {
-      width: 100%; aspect-ratio: 4/3;
-      object-fit: cover; display: block;
-      transition: transform .6s ease, filter .4s;
-      filter: saturate(0.85) sepia(0.1);
-    }
-    .portfolio-item:nth-child(1) .portfolio-img { aspect-ratio: 3/4; height: 100%; }
-    .portfolio-item:hover .portfolio-img {
-      transform: scale(1.04);
-      filter: saturate(1) sepia(0);
-    }
+/* Scale labels hidden */
+#bgsvg #skala-rechts text,
+#bgsvg #skala-unten text{display:none !important;}
 
-    .portfolio-overlay {
-      position: absolute; inset: 0;
-      background: linear-gradient(to top, rgba(26,23,20,0.8) 0%, transparent 50%);
-      opacity: 0; transition: opacity .4s;
-      display: flex; flex-direction: column;
-      justify-content: flex-end; padding: 1.5rem;
-    }
-    .portfolio-item:hover .portfolio-overlay { opacity: 1; }
-    .portfolio-overlay h3 {
-      font-family: var(--serif); font-size: 1.2rem;
-      font-weight: 300; color: var(--cream); font-style: italic;
-    }
-    .portfolio-overlay p {
-      font-size: 0.72rem; letter-spacing: 0.1em;
-      text-transform: uppercase; color: var(--gold);
-      margin-top: .3rem;
-    }
+/* === MARKERS === */
+.marker{cursor:pointer}
+.marker .halo{opacity:0;transition:opacity .2s}
+.marker:hover .halo{opacity:1}
+.marker .bg-circle{
+  fill:#fffdf2;
+  stroke:#7d5e3a;
+  stroke-width:0.7;
+  filter:drop-shadow(0 0.5px 1.2px rgba(0,0,0,.25));
+  transition:all .15s
+}
+.marker:hover .bg-circle{stroke-width:1.2;fill:#fffce5}
+.marker text.emoji{pointer-events:none;dominant-baseline:central;text-anchor:middle}
 
-    /* Art placeholder colors */
-    .art-1 { background: linear-gradient(135deg, #4a3728 0%, #8B6F47 40%, #C4A35A 100%); }
-    .art-2 { background: linear-gradient(200deg, #2d2a26 0%, #5c4a3a 60%, #8B6F47 100%); }
-    .art-3 { background: linear-gradient(45deg, #1a1714 0%, #3d3428 50%, #6b5a40 100%); }
-    .art-4 { background: linear-gradient(160deg, #3a2e24 0%, #7a6248 100%); }
-    .art-5 { background: linear-gradient(90deg, #2a2220 0%, #584838 50%, #9e8060 100%); }
-    .art-6 { background: linear-gradient(220deg, #1e1b18 0%, #4a3c2c 50%, #7a6248 100%); }
-    .art-7 { background: linear-gradient(135deg, #352b22 0%, #6e5840 40%, #c4a35a 100%); }
-    .art-8 { background: linear-gradient(180deg, #241e18 0%, #5a4835 50%, #8c7254 100%); }
+/* === PANEL === */
+#panel{
+  position:fixed;right:0;top:0;width:360px;height:100vh;
+  background:var(--panel-bg);
+  transform:translateX(100%);transition:transform .35s cubic-bezier(.22,1,.36,1);
+  z-index:200;overflow-y:auto;box-shadow:-8px 0 30px rgba(0,0,0,0.15);
+  display:flex;flex-direction:column
+}
+#panel.open{transform:translateX(0)}
+#phero{
+  width:100%;height:170px;display:flex;align-items:center;justify-content:center;
+  font-size:90px;flex-shrink:0;
+  background:linear-gradient(135deg,#c4dca4,#9fc97a 60%,#7eb05b);
+  position:relative
+}
+#phero::after{content:'';position:absolute;left:0;right:0;bottom:0;height:30px;background:linear-gradient(to bottom,transparent,var(--panel-bg))}
+#pclose{
+  position:absolute;top:14px;right:14px;width:36px;height:36px;border-radius:50%;
+  border:none;background:rgba(255,255,255,.95);cursor:pointer;font-size:17px;
+  display:flex;align-items:center;justify-content:center;color:var(--text-dark);
+  box-shadow:0 2px 6px rgba(0,0,0,.18);z-index:5;transition:all .2s
+}
+#pclose:hover{background:#fff;transform:rotate(90deg)}
+#pcontent{padding:18px 22px 36px;flex:1}
+#pname{font-family:'Playfair Display',serif;font-size:26px;font-weight:600;color:var(--text-dark);line-height:1.1;margin-bottom:3px}
+#pbot{font-size:13.5px;font-style:italic;color:var(--text-muted);margin-bottom:18px}
+#pdesc{font-size:14px;line-height:1.7;color:var(--text-mid);margin-bottom:20px}
+.ctitle{font-family:'Playfair Display',serif;font-size:14px;font-weight:600;color:var(--accent);margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.ctitle::before{content:'';display:block;width:18px;height:2px;background:var(--accent);border-radius:1px}
+.cgrid{display:grid;grid-template-columns:1fr 1fr;gap:9px}
+.cc{background:#f5f1e8;border-radius:9px;padding:11px 13px}
+.ccl{font-size:10.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;font-weight:700;margin-bottom:4px}
+.ccv{font-size:13px;color:var(--text-dark);line-height:1.35}
+.ccs{background:#eef5e8;border-radius:9px;padding:11px 13px;margin-top:9px;grid-column:1/-1}
 
-    .art-placeholder {
-      width: 100%; aspect-ratio: 4/3;
-      display: flex; align-items: center; justify-content: center;
-      position: relative; overflow: hidden;
-    }
-    .portfolio-item:nth-child(1) .art-placeholder { aspect-ratio: unset; height: 100%; min-height: 400px; }
-    .art-placeholder svg { opacity: 0.18; width: 40%; }
+/* === CONTROLS === */
+#zctrl{position:absolute;bottom:16px;right:16px;display:flex;flex-direction:column;gap:5px;z-index:50}
+.zbtn{
+  width:40px;height:40px;background:rgba(255,252,245,.96);border:1px solid var(--border);
+  border-radius:10px;font-size:19px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  color:var(--text-dark);box-shadow:0 2px 5px rgba(0,0,0,.15);transition:all .15s
+}
+.zbtn:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+#status{
+  position:absolute;bottom:16px;left:16px;background:rgba(255,252,245,.96);
+  border:1px solid var(--border);border-radius:10px;padding:7px 14px;font-size:13px;
+  color:var(--text-mid);z-index:50;font-weight:500;box-shadow:0 2px 5px rgba(0,0,0,.12)
+}
 
-    /* ── AUSSTELLUNGEN ── */
-    #ausstellungen { padding: 8rem 3rem 6rem; min-height: 100vh; }
-    .exhibitions-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start; }
-
-    .ex-group-title {
-      font-size: 0.65rem; letter-spacing: 0.25em;
-      text-transform: uppercase; color: var(--gold);
-      margin-bottom: 2rem;
-      display: flex; align-items: center; gap: 1rem;
-    }
-    .ex-group-title::after { content: ''; flex: 1; height: 1px; background: rgba(196,163,90,0.3); }
-
-    .ex-item {
-      display: grid; grid-template-columns: 80px 1fr;
-      gap: 1.5rem; padding: 1.5rem 0;
-      border-bottom: 1px solid rgba(26,23,20,0.08);
-      transition: padding .25s;
-    }
-    .ex-item:hover { padding-left: .5rem; }
-    .ex-item:last-child { border-bottom: none; }
-
-    .ex-date {
-      font-family: var(--serif); font-size: 1.8rem;
-      font-weight: 300; color: var(--gold);
-      line-height: 1; padding-top: .2rem;
-    }
-    .ex-date span { display: block; font-size: 0.7rem; font-family: var(--sans); color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: .2rem; }
-
-    .ex-info h3 {
-      font-family: var(--serif); font-size: 1.2rem;
-      font-weight: 400; margin-bottom: .3rem; font-style: italic;
-    }
-    .ex-info .venue {
-      font-size: 0.8rem; color: var(--muted);
-      display: flex; align-items: center; gap: .5rem;
-    }
-    .ex-info .venue::before { content: ''; display: block; width: 16px; height: 1px; background: var(--gold); }
-    .ex-badge {
-      display: inline-block; margin-top: .5rem;
-      font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
-      padding: .2rem .7rem; border-radius: 999px;
-    }
-    .badge-upcoming { background: rgba(196,163,90,0.15); color: var(--gold); border: 1px solid rgba(196,163,90,0.4); }
-    .badge-solo     { background: rgba(139,111,71,0.12); color: var(--warm); border: 1px solid rgba(139,111,71,0.3); }
-    .badge-group    { background: rgba(26,23,20,0.06); color: var(--muted); border: 1px solid rgba(26,23,20,0.12); }
-
-    /* ── ÜBER ── */
-    #ueber { padding: 8rem 3rem 6rem; min-height: 100vh; }
-    .about-layout {
-      display: grid; grid-template-columns: 5fr 7fr; gap: 8rem; align-items: start;
-    }
-    .about-portrait {
-      position: sticky; top: 8rem;
-    }
-    .portrait-frame {
-      aspect-ratio: 3/4; background: var(--light);
-      position: relative; overflow: hidden;
-    }
-    .portrait-art {
-      width: 100%; height: 100%;
-      background: linear-gradient(160deg, #2d2520 0%, #5e4a35 45%, #9e8060 100%);
-      display: flex; align-items: center; justify-content: center;
-    }
-    .portrait-art svg { opacity: 0.15; width: 50%; }
-    .portrait-caption {
-      margin-top: 1rem; font-size: 0.72rem; color: var(--muted);
-      letter-spacing: 0.08em;
-    }
-    .portrait-frame::after {
-      content: ''; position: absolute;
-      bottom: -12px; right: -12px;
-      width: 60%; height: 60%;
-      border: 1px solid rgba(196,163,90,0.4);
-      z-index: -1;
-    }
-
-    .about-text blockquote {
-      font-family: var(--serif); font-size: clamp(1.4rem, 2.5vw, 2rem);
-      font-weight: 300; font-style: italic;
-      line-height: 1.4; color: var(--warm);
-      border-left: 2px solid var(--gold);
-      padding-left: 2rem; margin-bottom: 2.5rem;
-    }
-    .about-text p {
-      font-size: 0.95rem; color: var(--muted);
-      margin-bottom: 1.2rem; line-height: 1.8;
-    }
-    .about-text p strong { color: var(--ink); font-weight: 400; }
-
-    .cv-section { margin-top: 3rem; }
-    .cv-year {
-      display: grid; grid-template-columns: 60px 1fr;
-      gap: 1rem; padding: .6rem 0;
-      font-size: 0.85rem;
-      border-bottom: 1px solid rgba(26,23,20,0.06);
-    }
-    .cv-year:last-child { border-bottom: none; }
-    .cv-year .year { color: var(--gold); font-family: var(--serif); font-size: 1rem; }
-    .cv-year .desc { color: var(--muted); }
-    .cv-year .desc strong { color: var(--ink); font-weight: 400; display: block; }
-
-    /* ── KONTAKT ── */
-    #kontakt { padding: 8rem 3rem 6rem; min-height: 80vh; }
-    .contact-layout {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 8rem;
-    }
-    .contact-intro { }
-    .contact-intro p { font-size: 0.9rem; color: var(--muted); margin-bottom: 2rem; }
-    .contact-details { list-style: none; margin-top: 3rem; }
-    .contact-details li {
-      display: flex; gap: 1rem; align-items: baseline;
-      padding: 1rem 0;
-      border-bottom: 1px solid rgba(26,23,20,0.08);
-      font-size: 0.85rem;
-    }
-    .contact-details .label {
-      font-size: 0.65rem; letter-spacing: 0.15em;
-      text-transform: uppercase; color: var(--gold);
-      min-width: 90px;
-    }
-    .contact-details a { color: var(--ink); text-decoration: none; transition: color .2s; }
-    .contact-details a:hover { color: var(--warm); }
-
-    /* Form */
-    .contact-form { }
-    .form-group { margin-bottom: 1.5rem; }
-    .form-group label {
-      display: block; font-size: 0.68rem;
-      letter-spacing: 0.18em; text-transform: uppercase;
-      color: var(--muted); margin-bottom: .6rem;
-    }
-    .form-group input,
-    .form-group textarea,
-    .form-group select {
-      width: 100%; background: transparent;
-      border: none; border-bottom: 1px solid rgba(26,23,20,0.2);
-      padding: .6rem 0; font-family: var(--sans);
-      font-size: 0.9rem; color: var(--ink);
-      outline: none; transition: border-color .25s;
-      appearance: none;
-    }
-    .form-group input:focus,
-    .form-group textarea:focus,
-    .form-group select:focus { border-color: var(--gold); }
-    .form-group textarea { resize: none; height: 100px; }
-    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
-
-    .submit-btn {
-      display: inline-flex; align-items: center; gap: 1rem;
-      font-family: var(--sans); font-size: 0.78rem;
-      letter-spacing: 0.15em; text-transform: uppercase;
-      background: var(--ink); color: var(--cream);
-      border: none; padding: 1rem 2.5rem;
-      cursor: pointer; transition: background .25s, gap .3s;
-      margin-top: 1rem;
-    }
-    .submit-btn:hover { background: var(--warm); gap: 1.6rem; }
-    .submit-btn::after { content: '→'; }
-
-    /* ── FOOTER ── */
-    footer {
-      background: var(--ink); color: var(--cream);
-      padding: 4rem 3rem 2rem;
-    }
-    .footer-top {
-      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
-      gap: 4rem; margin-bottom: 3rem;
-      padding-bottom: 3rem;
-      border-bottom: 1px solid rgba(245,240,232,0.08);
-    }
-    .footer-logo {
-      font-family: var(--serif); font-size: 2.5rem;
-      font-weight: 300; font-style: italic; color: var(--cream);
-      margin-bottom: 1rem;
-    }
-    .footer-tagline { font-size: 0.82rem; color: rgba(245,240,232,0.45); }
-    .footer-col h4 {
-      font-size: 0.65rem; letter-spacing: 0.2em;
-      text-transform: uppercase; color: var(--gold);
-      margin-bottom: 1.2rem;
-    }
-    .footer-col ul { list-style: none; }
-    .footer-col li { margin-bottom: .6rem; }
-    .footer-col a {
-      font-size: 0.82rem; color: rgba(245,240,232,0.55);
-      text-decoration: none; transition: color .2s;
-    }
-    .footer-col a:hover { color: var(--cream); }
-    .footer-bottom {
-      display: flex; justify-content: space-between;
-      align-items: center; flex-wrap: wrap; gap: 1rem;
-      font-size: 0.72rem; color: rgba(245,240,232,0.3);
-    }
-    .social-links { display: flex; gap: 1.5rem; }
-    .social-links a {
-      font-size: 0.72rem; letter-spacing: 0.12em;
-      text-transform: uppercase; color: rgba(245,240,232,0.4);
-      text-decoration: none; transition: color .2s;
-    }
-    .social-links a:hover { color: var(--gold); }
-
-    /* ── LIGHTBOX ── */
-    #lightbox {
-      position: fixed; inset: 0; z-index: 1000;
-      background: rgba(26,23,20,0.95);
-      display: none; align-items: center; justify-content: center;
-      padding: 3rem;
-    }
-    #lightbox.open { display: flex; }
-    #lightbox-content {
-      max-width: 700px; width: 100%; text-align: center;
-    }
-    .lightbox-art {
-      width: 100%; aspect-ratio: 4/3;
-      margin-bottom: 1.5rem;
-    }
-    #lightbox h2 {
-      font-family: var(--serif); font-size: 1.6rem;
-      font-weight: 300; font-style: italic; color: var(--cream);
-      margin-bottom: .4rem;
-    }
-    #lightbox p { font-size: 0.8rem; color: var(--gold); letter-spacing: 0.1em; }
-    .lightbox-close {
-      position: absolute; top: 2rem; right: 2rem;
-      background: none; border: 1px solid rgba(245,240,232,0.2);
-      color: var(--cream); width: 44px; height: 44px;
-      font-size: 1.2rem; cursor: pointer; border-radius: 50%;
-      transition: background .2s;
-    }
-    .lightbox-close:hover { background: rgba(196,163,90,0.2); }
-
-    /* ── MOBILE ── */
-    @media (max-width: 900px) {
-      nav { padding: 1.2rem 1.5rem; }
-      .nav-links { display: none; flex-direction: column; gap: 1.5rem; position: fixed; inset: 0; background: var(--cream); padding: 6rem 3rem 3rem; z-index: 99; }
-      .nav-links.open { display: flex; }
-      .nav-burger { display: flex; }
-      #home { padding: 0 1.5rem 4rem; }
-      .hero-title { font-size: clamp(3rem, 12vw, 5rem); }
-      #portfolio, #ausstellungen, #ueber, #kontakt { padding: 6rem 1.5rem 4rem; }
-      .portfolio-grid { grid-template-columns: 1fr 1fr; }
-      .portfolio-item { grid-column: span 1 !important; grid-row: span 1 !important; }
-      .exhibitions-layout, .about-layout, .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
-      .about-portrait { position: static; }
-      .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
-      .form-row { grid-template-columns: 1fr; }
-      body { cursor: auto; }
-      #cursor, #cursor-ring { display: none; }
-    }
-  </style>
+@media(max-width:600px){
+  #panel{width:100%}
+  #toolbar{padding:8px 10px;gap:8px}
+  #toolbar h1{font-size:15px}
+}
+</style>
 </head>
 <body>
-
-<!-- Custom Cursor -->
-<div id="cursor"></div>
-<div id="cursor-ring"></div>
-
-<!-- Navigation -->
-<nav id="mainNav">
-  <a class="nav-logo" href="#" onclick="showSection('home')">X</a>
-  <ul class="nav-links" id="navLinks">
-    <li><a href="#" onclick="showSection('home')"     class="active" data-section="home">Start</a></li>
-    <li><a href="#" onclick="showSection('portfolio')"           data-section="portfolio">Portfolio</a></li>
-    <li><a href="#" onclick="showSection('ausstellungen')"       data-section="ausstellungen">Ausstellungen</a></li>
-    <li><a href="#" onclick="showSection('ueber')"               data-section="ueber">Über mich</a></li>
-    <li><a href="#" onclick="showSection('kontakt')"             data-section="kontakt">Kontakt</a></li>
-  </ul>
-  <button class="nav-burger" id="burger" aria-label="Menü öffnen" onclick="toggleMenu()">
-    <span></span><span></span><span></span>
-  </button>
-</nav>
-
-<!-- ═══ HOME ═══ -->
-<section id="home" class="active">
-  <div class="hero-bg"></div>
-  <div class="hero-line"></div>
-  <p class="hero-eyebrow">Bildende Künstlerin · Berlin</p>
-  <h1 class="hero-title">
-    Zwischen<br>
-    <em>Stille &amp;<br>Bewegung</em>
-  </h1>
-  <p class="hero-sub">Malerei, Collage und Installation — Werke an der Grenze von Abstraktion und Erinnerung.</p>
-  <a class="hero-cta" href="#" onclick="showSection('portfolio')">Portfolio entdecken</a>
-  <div class="hero-scroll" aria-hidden="true">Scrollen</div>
-</section>
-
-<!-- ═══ PORTFOLIO ═══ -->
-<section id="portfolio">
-  <div class="section-header">
-    <div class="section-number">02 / Arbeiten</div>
-    <h2 class="section-title">Portfolio</h2>
-    <p class="section-sub">Ausgewählte Werke 2018 – 2025</p>
-  </div>
-
-  <div class="filter-bar">
-    <button class="filter-btn active" onclick="filterPortfolio('alle', this)">Alle</button>
-    <button class="filter-btn" onclick="filterPortfolio('malerei', this)">Malerei</button>
-    <button class="filter-btn" onclick="filterPortfolio('collage', this)">Collage</button>
-    <button class="filter-btn" onclick="filterPortfolio('installation', this)">Installation</button>
-    <button class="filter-btn" onclick="filterPortfolio('zeichnung', this)">Zeichnung</button>
-  </div>
-
-  <div class="portfolio-grid" id="portfolioGrid">
-
-    <div class="portfolio-item" data-cat="malerei" onclick="openLightbox('Schichtung I', 'Acryl auf Leinwand · 200 × 160 cm · 2024', 'art-1')">
-      <div class="art-placeholder art-1">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="30" fill="none" stroke="#fff" stroke-width="0.5"/><line x1="20" y1="50" x2="80" y2="50" stroke="#fff" stroke-width="0.5"/><line x1="50" y1="20" x2="50" y2="80" stroke="#fff" stroke-width="0.5"/><path d="M30 30 Q50 10 70 30 Q90 50 70 70 Q50 90 30 70 Q10 50 30 30Z" fill="none" stroke="#fff" stroke-width="0.3"/></svg>
-      </div>
-      <div class="portfolio-overlay"><h3>Schichtung I</h3><p>Malerei · 2024</p></div>
-    </div>
-
-    <div class="portfolio-item" data-cat="collage" onclick="openLightbox('Archiv der Stille', 'Mixed Media auf Papier · 90 × 70 cm · 2023', 'art-2')">
-      <div class="art-placeholder art-2">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="20" width="60" height="60" fill="none" stroke="#fff" stroke-width="0.5"/><rect x="30" y="30" width="40" height="40" fill="none" stroke="#fff" stroke-width="0.3"/><line x1="20" y1="20" x2="80" y2="80" stroke="#fff" stroke-width="0.3"/></svg>
-      </div>
-      <div class="portfolio-overlay"><h3>Archiv der Stille</h3><p>Collage · 2023</p></div>
-    </div>
-
-    <div class="portfolio-item" data-cat="zeichnung" onclick="openLightbox('Drift', 'Kohle auf Bütten · 120 × 90 cm · 2023', 'art-3')">
-      <div class="art-placeholder art-3">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10 90 Q30 10 50 50 Q70 90 90 10" fill="none" stroke="#fff" stroke-width="0.5"/><path d="M10 70 Q30 30 50 60 Q70 80 90 30" fill="none" stroke="#fff" stroke-width="0.3" opacity="0.5"/></svg>
-      </div>
-      <div class="portfolio-overlay"><h3>Drift</h3><p>Zeichnung · 2023</p></div>
-    </div>
-
-    <div class="portfolio-item" data-cat="installation" onclick="openLightbox('Raumgedicht', 'Installation · variable Maße · 2022', 'art-4')">
-      <div class="art-placeholder art-4">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,10 90,90 10,90" fill="none" stroke="#fff" stroke-width="0.5"/><polygon points="50,30 75,80 25,80" fill="none" stroke="#fff" stroke-width="0.3"/></svg>
-      </div>
-      <div class="portfolio-overlay"><h3>Raumgedicht</h3><p>Installation · 2022</p></div>
-    </div>
-
-    <div class="portfolio-item" data-cat="malerei" onclick="openLightbox('Ascheland', 'Öl auf Leinwand · 150 × 120 cm · 2022', 'art-5')">
-      <div class="art-placeholder art-5">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="0.5"/><circle cx="50" cy="50" r="25" fill="none" stroke="#fff" stroke-width="0.3"/><circle cx="50" cy="50" r="10" fill="rgba(255,255,255,0.1)" stroke="#fff" stroke-width="0.3"/></svg>
-      </div>
-      <div class="portfolio-overlay"><h3>Ascheland</h3><p>Malerei · 2022</p></div>
-    </div>
-
-    <div class="portfolio-item" data-cat="collage" onclick="openLightbox('Fragment II', 'Collage, Fotografie · 60 × 60 cm · 2021', 'art-6')">
-      <div class="art-placeholder art-6">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="100" y2="100" stroke="#fff" stroke-width="0.4"/><line x1="100" y1="0" x2="0" y2="100" stroke="#fff" stroke-width="0.4"/><rect x="30" y="30" width="40" height="40" fill="rgba(255,255,255,0.05)" stroke="#fff" stroke-width="0.3"/></svg>
-      </div>
-      <div class="portfolio-overlay"><h3>Fragment II</h3><p>Collage · 2021</p></div>
-    </div>
-
-    <div class="portfolio-item" data-cat="malerei" onclick="openLightbox('Goldener Schnitt', 'Acryl, Blattgold · 180 × 140 cm · 2021', 'art-7')">
-      <div class="art-placeholder art-7">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10 50 L50 10 L90 50 L50 90Z" fill="none" stroke="#fff" stroke-width="0.5"/><path d="M30 50 L50 30 L70 50 L50 70Z" fill="rgba(255,255,255,0.1)" stroke="#fff" stroke-width="0.3"/></svg>
-      </div>
-      <div class="portfolio-overlay"><h3>Goldener Schnitt</h3><p>Malerei · 2021</p></div>
-    </div>
-
-    <div class="portfolio-item" data-cat="zeichnung" onclick="openLightbox('Bleistiftlandschaft', 'Bleistift auf Papier · 100 × 70 cm · 2020', 'art-8')">
-      <div class="art-placeholder art-8">
-        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10 80 Q25 20 50 40 Q75 60 90 20" fill="none" stroke="#fff" stroke-width="0.5"/><path d="M10 90 Q40 50 70 70 Q85 78 90 60" fill="none" stroke="#fff" stroke-width="0.3" opacity="0.6"/></svg>
-      </div>
-      <div class="portfolio-overlay"><h3>Bleistiftlandschaft</h3><p>Zeichnung · 2020</p></div>
-    </div>
-
-  </div>
-</section>
-
-<!-- ═══ AUSSTELLUNGEN ═══ -->
-<section id="ausstellungen">
-  <div class="section-header">
-    <div class="section-number">03 / Veranstaltungen</div>
-    <h2 class="section-title">Ausstellungen</h2>
-    <p class="section-sub">Vergangene und kommende Präsentationen</p>
-  </div>
-
-  <div class="exhibitions-layout">
-    <!-- Kommend -->
-    <div>
-      <div class="ex-group-title">Kommende Ausstellungen</div>
-
-      <div class="ex-item">
-        <div class="ex-date">Jun<span>2025</span></div>
-        <div class="ex-info">
-          <h3>Zwischen den Zeilen</h3>
-          <div class="venue">Galerie Nord, Berlin</div>
-          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">6. Juni – 4. Juli 2025<br>Vernissage: Fr, 6. Juni, 19 Uhr</div>
-          <span class="ex-badge badge-upcoming">Bald · Solo</span>
-        </div>
-      </div>
-
-      <div class="ex-item">
-        <div class="ex-date">Sep<span>2025</span></div>
-        <div class="ex-info">
-          <h3>Material &amp; Erinnerung</h3>
-          <div class="venue">Kunsthalle Bremen, Bremen</div>
-          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">12. September – 2. November 2025</div>
-          <span class="ex-badge badge-group">Gruppenausstellung</span>
-        </div>
-      </div>
-
-      <div class="ex-item">
-        <div class="ex-date">Jan<span>2026</span></div>
-        <div class="ex-info">
-          <h3>Zeitfenster</h3>
-          <div class="venue">Galerie Wien Mitte, Wien</div>
-          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">Eröffnung voraussichtlich Jan. 2026</div>
-          <span class="ex-badge badge-upcoming">Geplant · Solo</span>
-        </div>
-      </div>
-    </div>
-
-    <!-- Vergangen -->
-    <div>
-      <div class="ex-group-title">Vergangene Ausstellungen</div>
-
-      <div class="ex-item">
-        <div class="ex-date">2024<span>Nov</span></div>
-        <div class="ex-info">
-          <h3>Schicht um Schicht</h3>
-          <div class="venue">Projektraum 44, Hamburg</div>
-          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">Nov. – Dez. 2024</div>
-          <span class="ex-badge badge-solo">Einzelausstellung</span>
-        </div>
-      </div>
-
-      <div class="ex-item">
-        <div class="ex-date">2024<span>Mar</span></div>
-        <div class="ex-info">
-          <h3>Art Berlin Open Studios</h3>
-          <div class="venue">Atelierhaus Kreuzberg, Berlin</div>
-          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">März 2024</div>
-          <span class="ex-badge badge-group">Gruppenausstellung</span>
-        </div>
-      </div>
-
-      <div class="ex-item">
-        <div class="ex-date">2023<span>Sep</span></div>
-        <div class="ex-info">
-          <h3>Stille Wasser</h3>
-          <div class="venue">Museum Folkwang, Essen</div>
-          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">Sep. – Nov. 2023</div>
-          <span class="ex-badge badge-group">Gruppenausstellung</span>
-        </div>
-      </div>
-
-      <div class="ex-item">
-        <div class="ex-date">2022<span>Jun</span></div>
-        <div class="ex-info">
-          <h3>Raumgedicht</h3>
-          <div class="venue">Galerie Nord, Berlin</div>
-          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">Jun. – Aug. 2022</div>
-          <span class="ex-badge badge-solo">Einzelausstellung</span>
-        </div>
-      </div>
-
-      <div class="ex-item">
-        <div class="ex-date">2021<span>Okt</span></div>
-        <div class="ex-info">
-          <h3>Junge Positionen</h3>
-          <div class="venue">Kunstverein München</div>
-          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">Okt. 2021</div>
-          <span class="ex-badge badge-group">Gruppenausstellung</span>
-        </div>
-      </div>
+<div id="app">
+  <div id="toolbar">
+    <h1>🌿 Garten 194</h1>
+    <div id="search-wrap">
+      <span class="si">🔍</span>
+      <input type="text" id="search" placeholder="Pflanze suchen…">
     </div>
   </div>
-</section>
+  <div id="garden-wrap">
+    <div id="garden-canvas">
+      <svg id="bgsvg" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 680 1800">
 
-<!-- ═══ ÜBER ═══ -->
-<section id="ueber">
-  <div class="section-header">
-    <div class="section-number">04 / Person</div>
-    <h2 class="section-title">Über mich</h2>
+  <sodipodi:namedview
+     id="namedview111"
+     pagecolor="#ffffff"
+     bordercolor="#000000"
+     borderopacity="0.25"
+     inkscape:showpageshadow="2"
+     inkscape:pageopacity="0.0"
+     inkscape:pagecheckerboard="0"
+     inkscape:deskcolor="#d1d1d1"
+     showgrid="false"
+     inkscape:zoom="1.1109287"
+     inkscape:cx="342.50621"
+     inkscape:cy="193.08169"
+     inkscape:window-width="1440"
+     inkscape:window-height="900"
+     inkscape:window-x="0"
+     inkscape:window-y="0"
+     inkscape:window-maximized="0"
+     inkscape:current-layer="svg111" />
+  <title
+     id="title1">Gartenplan – lange Architekturskizze</title>
+  <desc
+     id="desc1">Schmaler, langer Garten mit Beeten, Hütten, Terrassen und einem durchgehend gelb markierten Hauptweg vom Eingang oben bis zum Tor unten.</desc>
+  <defs
+     id="defs2">
+    <rect
+       x="508.39136"
+       y="361.19564"
+       width="74.730133"
+       height="75.862408"
+       id="rect139" />
+    <rect
+       x="484.61359"
+       y="372.51839"
+       width="93.978804"
+       height="58.878287"
+       id="rect138" />
+    <pattern
+       id="hatch"
+       patternUnits="userSpaceOnUse"
+       width="8"
+       height="8"
+       patternTransform="rotate(45)">
+      <line
+         x1="0"
+         y1="0"
+         x2="0"
+         y2="8"
+         stroke="#888888"
+         stroke-width="0.8"
+         id="line1" />
+    </pattern>
+    <pattern
+       id="hatch2"
+       patternUnits="userSpaceOnUse"
+       width="6"
+       height="6"
+       patternTransform="rotate(45)">
+      <line
+         x1="0"
+         y1="0"
+         x2="0"
+         y2="6"
+         stroke="#666666"
+         stroke-width="0.7"
+         id="line2" />
+    </pattern>
+    <style
+       type="text/css"
+       id="style2">
+      .label { font-family: Arial, sans-serif; font-size: 14px; fill: #222; font-style: italic; }
+      .label-bold { font-family: Arial, sans-serif; font-size: 14px; fill: #222; font-weight: 500; font-style: italic; }
+      .small { font-family: Arial, sans-serif; font-size: 12px; fill: #333; }
+      .scale { font-family: Arial, sans-serif; font-size: 9px; fill: #999; }
+    </style>
+  </defs>
+  <!-- Hintergrund weiß für Druck/Export -->
+  <rect
+     x="0.34444714"
+     y="0.54284024"
+     width="680"
+     height="1800"
+     fill="#ffffff"
+     id="rect2" />
+  <!-- ===== LEGENDE oben links ===== -->
+  <!-- ===== EINGANG ===== -->
+  <g
+     id="eingang"
+     transform="matrix(0.77354505,0,0,1,140.71079,15.886892)">
+    <text
+       class="small"
+       x="400"
+       y="70"
+       text-anchor="middle"
+       id="text5">Eingang</text>
+    <line
+       x1="370"
+       y1="78"
+       x2="430"
+       y2="78"
+       stroke="#333333"
+       stroke-width="1.2"
+       id="line5"
+       style="stroke:#183a1a;stroke-width:8.7;stroke-dasharray:none;stroke-opacity:1" />
+  </g>
+  <!-- ===== AUSSENRAHMEN (durchgehend) ===== -->
+  <path
+     id="aussenrahmen"
+     d="m 282.49044,90.311127 190.1136,1.044451 v 1119.638222 84.3242 346.6662 l -189.50191,-1.5829 -0.54614,-345.0833 v -84.3242 z"
+     fill="none"
+     stroke="#333333"
+     stroke-width="1.45212"
+     sodipodi:nodetypes="ccccccccc"
+     style="fill:none;fill-opacity:1" />
+  <!-- ===== Skala rechts ===== -->
+  <g
+     id="skala-rechts">
+    <text
+       class="scale"
+       x="478"
+       y="105"
+       id="text6">31</text>
+    <text
+       class="scale"
+       x="478"
+       y="140"
+       id="text7">30</text>
+    <text
+       class="scale"
+       x="478"
+       y="175"
+       id="text8">29</text>
+    <text
+       class="scale"
+       x="478"
+       y="210"
+       id="text9">28</text>
+    <text
+       class="scale"
+       x="478"
+       y="245"
+       id="text10">27</text>
+    <text
+       class="scale"
+       x="478"
+       y="280"
+       id="text11">26</text>
+    <text
+       class="scale"
+       x="478"
+       y="315"
+       id="text12">25</text>
+    <text
+       class="scale"
+       x="478"
+       y="350"
+       id="text13">24</text>
+    <text
+       class="scale"
+       x="478"
+       y="385"
+       id="text14">23</text>
+    <text
+       class="scale"
+       x="478"
+       y="420"
+       id="text15">22</text>
+    <text
+       class="scale"
+       x="478"
+       y="455"
+       id="text16">21</text>
+    <text
+       class="scale"
+       x="478"
+       y="490"
+       id="text17">20</text>
+    <text
+       class="scale"
+       x="478"
+       y="525"
+       id="text18">19</text>
+    <text
+       class="scale"
+       x="478"
+       y="560"
+       id="text19">18</text>
+    <text
+       class="scale"
+       x="478"
+       y="595"
+       id="text20">17</text>
+    <text
+       class="scale"
+       x="478"
+       y="630"
+       id="text21">16</text>
+    <text
+       class="scale"
+       x="478"
+       y="665"
+       id="text22">15</text>
+    <text
+       class="scale"
+       x="478"
+       y="700"
+       id="text23">14</text>
+    <text
+       class="scale"
+       x="478"
+       y="735"
+       id="text24">13</text>
+    <text
+       class="scale"
+       x="478"
+       y="770"
+       id="text25">12</text>
+    <text
+       class="scale"
+       x="478"
+       y="805"
+       id="text26">11</text>
+    <text
+       class="scale"
+       x="478"
+       y="840"
+       id="text27">10</text>
+    <text
+       class="scale"
+       x="478"
+       y="875"
+       id="text28">9</text>
+    <text
+       class="scale"
+       x="478"
+       y="910"
+       id="text29">8</text>
+    <text
+       class="scale"
+       x="478"
+       y="945"
+       id="text30">7</text>
+    <text
+       class="scale"
+       x="478"
+       y="980"
+       id="text31">6</text>
+    <text
+       class="scale"
+       x="478"
+       y="1015"
+       id="text32">5</text>
+    <text
+       class="scale"
+       x="478"
+       y="1050"
+       id="text33">4</text>
+    <text
+       class="scale"
+       x="478"
+       y="1085"
+       id="text34">3</text>
+    <text
+       class="scale"
+       x="478"
+       y="1120"
+       id="text35">2</text>
+    <text
+       class="scale"
+       x="478"
+       y="1155"
+       id="text36">1</text>
+  </g>
+  <!-- ===== KRÄUTERBEET ===== -->
+  <rect
+     x="283.84943"
+     y="91.194"
+     width="134.43665"
+     height="32.994114"
+     fill="#eaf3de"
+     stroke="#333333"
+     stroke-width="0.848179"
+     id="Kr__uterbeet"
+     style="stroke-linecap:butt" />
+  
+  
+  
+  
+  
+  
+  
+  
+  <!-- ===== HÜGELBEET ===== -->
+  <!-- ===== BEERENSTRÄUCHER (Punkte) ===== -->
+  <!-- ===== ANMERKUNG Beerensträucher ===== -->
+  <g
+     id="anmerkung-beeren">
+    <text
+       xml:space="preserve"
+       id="text138"
+       style="writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect138);display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.06583;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:0" />
+    <text
+       xml:space="preserve"
+       id="text139"
+       style="writing-mode:lr-tb;direction:ltr;white-space:pre;shape-inside:url(#rect139);display:inline;fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.06583;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:0" />
+  </g>
+  <!-- ===== GEMÜSEBEET ===== -->
+  <!-- ===== KOMPOST ===== -->
+  <g
+     id="kompost"
+     transform="matrix(-0.00214994,-0.89083935,1.0011503,-0.00191305,-281.73041,960.25142)"
+     style="fill:#e9c6af">
+    <rect
+       x="320"
+       y="565"
+       width="81.114326"
+       height="43.342983"
+       fill="#ffffff"
+       stroke="#333333"
+       stroke-width="0.9"
+       id="rect69"
+       style="fill:#e9c6af;fill-opacity:1" />
+  </g>
+  <!-- ===== Schraffurbereich groß ===== -->
+  <g
+     id="schraffur-gross" />
+  <!-- ===== Sträucher im Schraffurbereich ===== -->
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <!-- ===== Brunnen/Wassertonne ===== -->
+  
+  <!-- ===== TOTHOLZBEET ===== -->
+  <!-- ===== Baum ===== -->
+  
+  <circle
+     id="baumstumpf"
+     cx="317.57919"
+     cy="1005.4834"
+     r="8"
+     fill="none"
+     stroke="#333333"
+     stroke-width="0.9" />
+  <!-- ===== TERRASSE oben ===== -->
+  
+  <rect
+     x="284.20609"
+     y="1046.967"
+     width="166.86885"
+     height="101.80521"
+     fill="none"
+     stroke="#333333"
+     stroke-width="1.42777"
+     id="Terassse"
+     style="fill:#e6e6e6" />
+  <!-- ===== Beet Atrium / Mais ===== -->
+  <!-- ===== VORDACH ===== -->
+  <!-- ===== ZWEITE LEGENDE ===== -->
+  <!-- ===== LAUBE ===== -->
+  <!-- ===== Beet rechts Laube ===== -->
+  <!-- ===== 10 °C ===== -->
+  <g
+     id="frostmarke" />
+  <!-- ===== Bäume unten ===== -->
+  <!-- ===== Geschwungenes Beet unten ===== -->
+  <!-- ===== SCHUPPEN ===== -->
+  <!-- ===== Terrasse unten ===== -->
+  <!-- ===== TOR ===== -->
+  <g
+     id="tor"
+     transform="matrix(1.0056529,0,0,0.6329055,85.237884,535.04632)">
+    <rect
+       x="355"
+       y="1740"
+       width="20"
+       height="8"
+       fill="none"
+       stroke="#333333"
+       stroke-width="0.8"
+       id="rect103" />
+    <text
+       class="small"
+       x="365"
+       y="1755"
+       text-anchor="middle"
+       id="text104">Tor</text>
+  </g>
+  <!-- ===== Skala unten ===== -->
+  <g
+     id="skala-unten"
+     transform="translate(1.7191037,-109.77702)">
+    <text
+       class="scale"
+       x="240"
+       y="1760"
+       id="text105">6</text>
+    <text
+       class="scale"
+       x="280"
+       y="1760"
+       id="text106">5</text>
+    <text
+       class="scale"
+       x="320"
+       y="1760"
+       id="text107">4</text>
+    <text
+       class="scale"
+       x="360"
+       y="1760"
+       id="text108">3</text>
+    <text
+       class="scale"
+       x="400"
+       y="1760"
+       id="text109">2</text>
+    <text
+       class="scale"
+       x="440"
+       y="1760"
+       id="text110">1</text>
+    <text
+       class="scale"
+       x="468"
+       y="1760"
+       id="text111">0</text>
+  </g>
+  <!-- ===== GELBER HAUPTWEG ===== -->
+  <path
+     id="hauptweg"
+     d="m 453.01289,100.11854 c -2.18474,32.48962 -24.28404,51.85245 -107.05983,52.42715 -39.74933,4.18276 -49.43352,11.09059 -42.63987,62.61765 -3.35692,31.85592 71.48663,40.71378 144.03202,77.09881 18.23612,28.4591 6.42985,75.82515 12.05132,132.59113 3.15668,31.87639 1.11111,53.23127 -21.18705,120.27315 -5.70127,27.32682 -16.98411,48.99227 -40.64216,112.5519 -11.65459,31.31118 11.0988,46.89657 -3.2712,125.90588 -7.71202,42.40232 -21.09204,30.68855 -73.75523,78.96913 0,0 -36.58925,38.32493 -1.07243,83.35898 24.41165,29.31012 96.51514,65.45408 117.08703,182.85468 l 6.26693,69.5818 v 52.5622"
+     fill="none"
+     stroke="#f5d000"
+     stroke-width="13.7346"
+     stroke-linecap="round"
+     opacity="0.85"
+     sodipodi:nodetypes="ccccscssscccc"
+     sodipodi:insensitive="true" />
+  <rect
+     style="fill:none"
+     id="rect112"
+     width="142.68829"
+     height="53.508148"
+     x="39.016335"
+     y="1380.0634" />
+  <rect
+     style="fill:none"
+     id="rect113"
+     width="43.475342"
+     height="25.639305"
+     x="43.475342"
+     y="1374.4896" />
+  <rect
+     style="fill:none;stroke:none;stroke-opacity:1"
+     id="rect114"
+     width="173.90137"
+     height="54.622868"
+     x="46.819599"
+     y="1386.752" />
+  
+  
+  
+  
+  <path
+     style="fill:#ffffff;fill-opacity:1;stroke:#110909;stroke-width:1.00157;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+     id="path119"
+     sodipodi:type="arc"
+     sodipodi:cx="369.36514"
+     sodipodi:cy="1590.0454"
+     sodipodi:rx="50.721233"
+     sodipodi:ry="18.95079"
+     sodipodi:start="0"
+     sodipodi:end="0.016704505"
+     sodipodi:open="true"
+     sodipodi:arc-type="arc"
+     d="m 420.08638,1590.0454 a 50.721233,18.95079 0 0 1 -0.007,0.3166" />
+  <path
+     style="fill:#ffffff;fill-opacity:1;stroke:#110909;stroke-width:1.00157;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+     id="path120"
+     sodipodi:type="arc"
+     sodipodi:cx="367.13565"
+     sodipodi:cy="1582.2421"
+     sodipodi:rx="54.065491"
+     sodipodi:ry="13.377028"
+     sodipodi:start="0"
+     sodipodi:end="0.016704505"
+     sodipodi:open="true"
+     sodipodi:arc-type="arc"
+     d="m 421.20114,1582.2421 a 54.065491,13.377028 0 0 1 -0.008,0.2234" />
+  <path
+     style="fill:#e6e6e6;fill-opacity:1;stroke:#110909;stroke-width:0.687613;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+     id="path121"
+     sodipodi:type="arc"
+     sodipodi:cx="-2056.8984"
+     sodipodi:cy="-1380.2914"
+     sodipodi:rx="51.873436"
+     sodipodi:ry="45.909531"
+     sodipodi:start="0.0095772228"
+     sodipodi:end="6.2472936"
+     sodipodi:arc-type="arc"
+     d="m -2005.0274,-1379.8517 a 51.873436,45.909531 0 0 1 -51.7782,45.4698 51.873436,45.909531 0 0 1 -51.9618,-45.3055 51.873436,45.909531 0 0 1 50.5969,-46.4997 51.873436,45.909531 0 0 1 53.1121,44.2483"
+     transform="matrix(-0.81612182,-0.57787989,0.95489634,-0.29693936,0,0)"
+     sodipodi:open="true" />
+  <path
+     d="m 285.95023,1560.5848 v 46.9765 4.2177 24.1627 h 149.10651 v -28.3804 H 318.12688 v -46.9765 z"
+     style="fill:#4d4d4d;stroke:#110909;stroke-width:0.970071;stroke-linejoin:bevel"
+     id="Schuppen" />
+  <path
+     style="fill:#ffffff;fill-opacity:0.426593;stroke:none;stroke-width:1.00157;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+     id="path126"
+     sodipodi:type="arc"
+     sodipodi:cx="478.59097"
+     sodipodi:cy="1447.3829"
+     sodipodi:rx="36.120071"
+     sodipodi:ry="1.2900026"
+     sodipodi:start="0.0095772228"
+     sodipodi:end="2.2514113"
+     sodipodi:open="true"
+     sodipodi:arc-type="arc"
+     d="m 514.70939,1447.3953 a 36.120071,1.2900026 0 0 1 -20.72358,1.1546 36.120071,1.2900026 0 0 1 -38.12415,-0.1644" />
+  <path
+     style="fill:#ffffff;fill-opacity:0.426593;stroke:none;stroke-width:1.00157;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+     id="path127"
+     sodipodi:type="arc"
+     sodipodi:cx="499.87601"
+     sodipodi:cy="1462.2179"
+     sodipodi:rx="4.5150089"
+     sodipodi:ry="0.64500129"
+     sodipodi:start="0.0095772228"
+     sodipodi:end="2.2514113"
+     sodipodi:open="true"
+     sodipodi:arc-type="arc"
+     d="m 504.39081,1462.2241 a 4.5150089,0.64500129 0 0 1 -2.59045,0.5773 4.5150089,0.64500129 0 0 1 -4.76552,-0.082" />
+  <path
+     style="fill:#ffffff;fill-opacity:0.426593;stroke:none;stroke-width:1.00157;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+     id="path129"
+     sodipodi:type="arc"
+     sodipodi:cx="463.7182"
+     sodipodi:cy="1368.4431"
+     sodipodi:rx="15.480031"
+     sodipodi:ry="1.2900026"
+     sodipodi:start="0.0067604051"
+     sodipodi:end="2.2514113"
+     sodipodi:arc-type="slice"
+     d="m 479.19788,1368.4518 a 15.480031,1.2900026 0 0 1 -8.86218,1.1575 15.480031,1.2900026 0 0 1 -16.35864,-0.1636 l 9.74114,-1.0026 z" />
+  <path
+     style="fill:#ffffff;fill-opacity:0.426593;stroke:none;stroke-width:1.00157;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+     id="path130"
+     sodipodi:type="arc"
+     sodipodi:cx="470.20593"
+     sodipodi:cy="1295.1626"
+     sodipodi:rx="13.545027"
+     sodipodi:ry="1.2900026"
+     sodipodi:start="0.0095772228"
+     sodipodi:end="2.2514113"
+     sodipodi:open="true"
+     sodipodi:arc-type="arc"
+     d="m 483.75034,1295.175 a 13.545027,1.2900026 0 0 1 -7.77134,1.1546 13.545027,1.2900026 0 0 1 -14.29656,-0.1644" />
+  <g
+     id="Knoblauch_Beet"
+     transform="translate(1.2841965,-0.64209849)">
+    <g
+       id="beet_unten">
+      <path
+         style="fill:#eaf3de;fill-opacity:1;stroke:#5a7a3a;stroke-width:2.13809;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+         id="Beet_unten"
+         sodipodi:type="arc"
+         sodipodi:cx="1423.0912"
+         sodipodi:cy="-461.27789"
+         sodipodi:rx="111.04974"
+         sodipodi:ry="36.329956"
+         sodipodi:start="0.0097797906"
+         sodipodi:end="3.1642078"
+         sodipodi:arc-type="slice"
+         d="m 1534.1356,-460.9226 a 111.04974,36.329956 0 0 1 -56.877,31.35962 111.04974,36.329956 0 0 1 -111.4463,-0.5906 111.04974,36.329956 0 0 1 -53.7425,-31.94585 l 111.0214,0.82154 z"
+         transform="matrix(0.00553598,0.99998468,-0.99987468,0.01583134,0,0)" />
+    </g>
+  </g>
+  <rect
+     style="fill:none;fill-opacity:1;stroke:none;stroke-width:1.06583;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+     id="rect133"
+     width="126.42025"
+     height="87.720177"
+     x="63.210125"
+     y="873.33173" />
+  <rect
+     style="fill:none;fill-opacity:1;stroke:none;stroke-width:1.06583;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1"
+     id="rect134"
+     width="99.3302"
+     height="130.29027"
+     x="58.050117"
+     y="819.15161" />
+  <path
+     id="path137"
+     style="fill:#4d4d4d;stroke:#020101;stroke-width:1.18235;stroke-linejoin:bevel;stroke-dasharray:none"
+     d="m 282.37674,1149.3177 v 95.1426 h -0.004 v 29.8047 h 26.99609 v -17.9942 h 108.34189 v -106.9531 z" />
+  
+  
+  
+  
+  
+  <path
+     style="fill:none;fill-opacity:1;stroke:#000000;stroke-width:1.06583;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:0"
+     id="path138"
+     sodipodi:type="arc"
+     sodipodi:cx="525.63513"
+     sodipodi:cy="1412.8976"
+     sodipodi:rx="22.677633"
+     sodipodi:ry="14.983437"
+     sodipodi:start="0.27874799"
+     sodipodi:end="3.942706"
+     sodipodi:arc-type="slice"
+     d="m 547.43742,1417.0203 a 22.677633,14.983437 0 0 1 -20.19966,10.8233 22.677633,14.983437 0 0 1 -22.30742,-8.8335 22.677633,14.983437 0 0 1 4.92325,-16.8726 l 15.78154,10.7601 z" />
+  <path
+     style="fill:none;fill-opacity:1;stroke:#070707;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+     d="M 477.41329,120.38669 Z"
+     id="path144" />
+  <path
+     style="fill:#eaf3de;fill-opacity:1;stroke:#070707;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+     d="m 434.56271,143.87769 10.09097,-5.20824 5.53376,-3.90618 5.20824,-2.92964 5.20824,-2.60412 3.90619,-3.58067 2.2786,-2.2786 1.95309,-0.97655 1.30206,-1.30206 0.65103,-1.95309 0.32552,-1.95309 -0.97655,53.71 0.97655,129.55503 -2.27861,0.32551 -7.81236,-17.2523 -58.59273,-25.7157 -49.4783,-15.62473 -41.0149,-23.11157 -1.30207,-9.43994 -0.65103,-16.60127 V 180.6609 l 2.60413,-8.46339 6.83581,-5.53376 7.16134,-3.58066 11.71854,-1.9531 14.9737,-0.65103 34.5046,-2.60412 20.50746,-3.25515 11.71854,-3.58066 z"
+     id="Huegelbeet" />
+  
+  
+  
+  
+  
+  <path
+     style="fill:none;fill-opacity:1;stroke:#070707;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+     d="M 504.87398,140.62254 Z"
+     id="path146" />
+  <rect
+     style="fill:#563f21;fill-opacity:1;stroke:#070707;stroke-width:0.601299;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+     id="Totholzecke"
+     width="13.471"
+     height="42.443165"
+     x="282.98996"
+     y="965.18896" />
+  
+  
+  <path
+     style="fill:#eaf3de;fill-opacity:1;stroke:#070707;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-opacity:1;paint-order:normal"
+     d="m 287.98721,267.89508 30.44263,9.74164 97.41639,40.79312 3.65312,4.87082 1.2177,17.04787 -1.82656,130.90327 -4.87082,10.95935 -6.69737,24.96295 -7.91509,22.52754 -27.39836,61.4941 -2.43541,7.30623 -2.43541,2.43541 -82.80393,-1.21771 1.2177,-295.29344 -0.60885,-29.22492 z"
+     id="Gem__sebeet" />
+  
+  
+  
+  
+  <path
+     style="fill:#eaf3de;fill-opacity:1;stroke:#070707;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:0.7, 2.1;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+     d="m 340.34853,287.98721 -7.91509,310.51476"
+     id="path148" />
+  <path
+     style="fill:#eaf3de;fill-opacity:1;stroke:#070707;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:0.7, 2.1;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+     d="m 283.72525,416.45508 c 133.94754,43.83738 133.94754,43.83738 133.94754,43.83738 v 0"
+     id="path150" />
+  
+  
+  
+  <path
+     style="fill:#eaf3de;fill-opacity:1;stroke:#070707;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:0.7, 2.1;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+     d="m 471.2518,963.81344 -88.2836,-1.2177 0.60885,-5.47967 v -32.87804 l -1.2177,-8.52393 -3.65312,-6.08852 -7.30623,-2.43541 -9.74164,-0.60886 -10.95934,1.21771 -6.69738,0.60885 -6.69738,-0.60885 -3.65311,-3.65312 -3.04426,-4.26196 -1.21771,-4.87082 v -6.08853 -7.30623 l 1.82656,-3.65311 2.43541,-2.43541 6.08852,-3.65312 5.47968,-2.43541 5.47967,-1.2177 6.08852,-1.82656 4.87082,-1.82656 6.69738,-1.82655 5.47967,-2.43541 4.26197,-2.43541 6.69737,-2.43541 10.3505,-8.52394 4.26196,-6.69737 4.26197,-6.08853 4.26197,-7.30623 1.2177,-8.52393 1.21771,-8.52394 v -8.52393 l -0.60885,-11.5682 V 777.50459 L 408.54,747.06197 v -9.74164 -18.26557 -21.30984 l -0.60885,-25.5718 3.65311,-21.91869 6.69738,-24.3541 6.08852,-2.43541 9.13279,-0.60885 8.52394,-0.60886 9.13278,-0.60885 12.7859,0.60885 h 4.87082 l 1.21771,-0.60885 0.43959,-0.32578 v 150.8389 z"
+     id="path151" />
+  
+  
+  
+  
+  
+  <rect
+     style="fill:#eaf3de;fill-opacity:1;stroke:#070707;stroke-width:0.780867;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:0.780867, 2.3426;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+     id="Beet_"
+     width="19.135"
+     height="291.03656"
+     x="452.56952"
+     y="965.62793"
+     ry="0" />
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  <rect
+     style="fill:none;fill-opacity:1;stroke:#070707;stroke-width:0.741365;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+     id="IBC_Container"
+     width="22.398636"
+     height="37.161972"
+     x="283.47467"
+     y="1283.2405" />
+  
+  
+  
+  
+  
+  
+  
+  
+  <circle
+     cx="308.83591"
+     cy="-1287.5018"
+     r="3"
+     id="Ackerbohne-2"
+     style="fill:#333333"
+     inkscape:transform-center-x="11.532373"
+     transform="matrix(0.99268704,-0.1207164,-0.1207164,-0.99268704,0,0)"
+     inkscape:transform-center-y="1.4024578" />
+  
+  <path
+     style="fill:none;fill-opacity:1;stroke:#070707;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+     d="m 452.62814,1143.8579 c 18.3196,0 18.3196,0 18.3196,0 v 0"
+     id="path162" />
+  
+  
+  
+  
+  <rect
+     style="fill:none;fill-opacity:1;stroke:#e9c6af;stroke-width:0.7;stroke-linecap:butt;stroke-linejoin:bevel;stroke-dasharray:none;stroke-dashoffset:0;stroke-opacity:1;paint-order:normal"
+     id="rect162"
+     width="132.5385"
+     height="70.443695"
+     x="284.38379"
+     y="1076.484" />
+  <ellipse
+     id="path163"
+     style="fill:#f4d7d7;stroke:#e9c6af"
+     cx="350.23557"
+     cy="1076.0483"
+     rx="0.114"
+     ry="0.11449277" />
+  <circle
+     id="path164"
+     style="fill:#f4d7d7;stroke:#e9c6af"
+     cx="318.72086"
+     cy="1045.8333"
+     r="0.11449277" />
+  <circle
+     id="path165"
+     style="fill:#f4d7d7;stroke:#e9c6af"
+     cx="319.04575"
+     cy="1045.8333"
+     r="0.11449277" />
+  <circle
+     id="path166"
+     style="fill:#f4d7d7;stroke:#e9c6af"
+     cx="322.29468"
+     cy="1060.7784"
+     r="0.11449277" />
+
+      </svg>
+    </div>
+    <div id="zctrl">
+      <button class="zbtn" id="zi">+</button>
+      <button class="zbtn" id="zo">−</button>
+      <button class="zbtn" id="zr" title="Zentrieren">⌖</button>
+    </div>
+    <div id="status">0 Pflanzen</div>
   </div>
+</div>
 
-  <div class="about-layout">
-    <div class="about-portrait">
-      <div class="portrait-frame">
-        <div class="portrait-art">
-          <svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="45" rx="22" ry="28" fill="none" stroke="#fff" stroke-width="0.5"/><path d="M20 140 Q20 90 50 80 Q80 90 80 140" fill="none" stroke="#fff" stroke-width="0.5"/><circle cx="50" cy="45" r="10" fill="rgba(255,255,255,0.08)"/></svg>
-        </div>
-      </div>
-      <p class="portrait-caption">X im Atelier, Berlin 2024</p>
-    </div>
-
-    <div class="about-text">
-      <blockquote>
-        "Kunst ist für mich das Archiv des Unausgesprochenen — eine Sprache, die dort beginnt, wo Worte aufhören."
-      </blockquote>
-
-      <p><strong>X</strong> ist eine in Berlin lebende und arbeitende Künstlerin, deren Praxis Malerei, Zeichnung, Collage und raumgreifende Installation umfasst. Im Zentrum ihrer Arbeit steht die Auseinandersetzung mit Schichten — materiellen wie emotionalen — und der Frage, was zwischen den Oberflächen verborgen liegt.</p>
-
-      <p>Geboren 1988 in München, studierte sie an der <strong>Hochschule für Bildende Künste Hamburg</strong> (2008–2014) und schloss ihr Masterstudium an der <strong>Städelschule Frankfurt</strong> ab. Seither lebt und arbeitet sie in Berlin-Kreuzberg.</p>
-
-      <p>Ihre Werke wurden in Galerien und Museen in Deutschland, Österreich und der Schweiz gezeigt. Sie ist Trägerin des <strong>Berliner Kunstpreises 2021</strong> und des <strong>Stipendiums der Kulturstiftung des Bundes 2019</strong>.</p>
-
-      <div class="cv-section">
-        <div class="ex-group-title" style="margin-bottom:1.2rem">Vita (Auswahl)</div>
-
-        <div class="cv-year"><span class="year">2024</span><span class="desc"><strong>Projektraum 44, Hamburg</strong> Einzelausstellung „Schicht um Schicht"</span></div>
-        <div class="cv-year"><span class="year">2023</span><span class="desc"><strong>Museum Folkwang, Essen</strong> Gruppenausstellung „Stille Wasser"</span></div>
-        <div class="cv-year"><span class="year">2022</span><span class="desc"><strong>Galerie Nord, Berlin</strong> Einzelausstellung „Raumgedicht"</span></div>
-        <div class="cv-year"><span class="year">2021</span><span class="desc"><strong>Berliner Kunstpreis</strong> Auszeichnung für Bildende Kunst</span></div>
-        <div class="cv-year"><span class="year">2019</span><span class="desc"><strong>Kulturstiftung des Bundes</strong> Jahresstipendium</span></div>
-        <div class="cv-year"><span class="year">2014</span><span class="desc"><strong>Städelschule Frankfurt</strong> Master of Fine Arts</span></div>
-        <div class="cv-year"><span class="year">2008</span><span class="desc"><strong>HfBK Hamburg</strong> Studium Bildende Kunst</span></div>
-      </div>
+<div id="panel">
+  <div id="phero"></div>
+  <button id="pclose">✕</button>
+  <div id="pcontent">
+    <div id="pname"></div>
+    <div id="pbot"></div>
+    <div id="pdesc"></div>
+    <div style="margin-top:6px">
+      <div class="ctitle">Pflegehinweise</div>
+      <div class="cgrid" id="cgrid"></div>
     </div>
   </div>
-</section>
-
-<!-- ═══ KONTAKT ═══ -->
-<section id="kontakt">
-  <div class="section-header">
-    <div class="section-number">05 / Kontakt</div>
-    <h2 class="section-title">Kontakt</h2>
-  </div>
-
-  <div class="contact-layout">
-    <div class="contact-intro">
-      <p>Für Anfragen zu Werken, Ausstellungskooperationen, Workshops oder Presseangelegenheiten stehe ich gerne zur Verfügung.</p>
-      <p>Atelier-Besuche sind nach Vereinbarung möglich.</p>
-
-      <ul class="contact-details">
-        <li><span class="label">E-Mail</span><a href="mailto:hallo@meinewebsite.de">hallo@meinewebsite.de</a></li>
-        <li><span class="label">Telefon</span>+49 (0)30 123 456 78</li>
-        <li><span class="label">Atelier</span>Kreuzberg, Berlin</li>
-        <li><span class="label">Galerie</span><a href="https://galerie-nord.de" target="_blank" rel="noopener">Galerie Nord, Berlin</a></li>
-        <li><span class="label">Instagram</span><a href="https://instagram.com" target="_blank" rel="noopener">@x.kuenstlerin</a></li>
-        <li><span class="label">Impressum</span><a href="#" onclick="showSection('impressum')">Rechtliche Hinweise</a></li>
-      </ul>
-    </div>
-
-    <div class="contact-form">
-      <form onsubmit="handleForm(event)">
-        <div class="form-row">
-          <div class="form-group">
-            <label for="fname">Vorname</label>
-            <input type="text" id="fname" name="fname" placeholder="Anna" required>
-          </div>
-          <div class="form-group">
-            <label for="lname">Nachname</label>
-            <input type="text" id="lname" name="lname" placeholder="Müller" required>
-          </div>
-        </div>
-        <div class="form-group">
-          <label for="email">E-Mail-Adresse</label>
-          <input type="email" id="email" name="email" placeholder="anna@beispiel.de" required>
-        </div>
-        <div class="form-group">
-          <label for="betreff">Betreff</label>
-          <select id="betreff" name="betreff">
-            <option value="">Bitte wählen …</option>
-            <option value="werk">Werkankauf / Werk-Anfrage</option>
-            <option value="ausstellung">Ausstellungskooperation</option>
-            <option value="presse">Presse &amp; Medien</option>
-            <option value="workshop">Workshop / Vortrag</option>
-            <option value="sonstiges">Sonstiges</option>
-          </select>
-        </div>
-        <div class="form-group">
-          <label for="nachricht">Nachricht</label>
-          <textarea id="nachricht" name="nachricht" placeholder="Ihre Nachricht …" required></textarea>
-        </div>
-        <div class="form-group" style="font-size:0.75rem;color:var(--muted)">
-          <input type="checkbox" id="dsgvo" required style="width:auto;border:none;margin-right:.5rem">
-          <label for="dsgvo" style="display:inline;font-size:0.75rem;text-transform:none;letter-spacing:0;color:var(--muted)">Ich habe die <a href="#" style="color:var(--warm)">Datenschutzerklärung</a> gelesen und stimme zu.</label>
-        </div>
-        <button type="submit" class="submit-btn">Nachricht senden</button>
-        <div id="form-success" style="display:none;margin-top:1rem;font-size:0.82rem;color:var(--warm)">Vielen Dank! Ihre Nachricht wurde gesendet.</div>
-      </form>
-    </div>
-  </div>
-</section>
-
-<!-- ═══ FOOTER ═══ -->
-<footer>
-  <div class="footer-top">
-    <div>
-      <div class="footer-logo">X</div>
-      <p class="footer-tagline">Bildende Künstlerin<br>Berlin, Deutschland</p>
-    </div>
-    <div class="footer-col">
-      <h4>Navigation</h4>
-      <ul>
-        <li><a href="#" onclick="showSection('home')">Start</a></li>
-        <li><a href="#" onclick="showSection('portfolio')">Portfolio</a></li>
-        <li><a href="#" onclick="showSection('ausstellungen')">Ausstellungen</a></li>
-        <li><a href="#" onclick="showSection('ueber')">Über mich</a></li>
-        <li><a href="#" onclick="showSection('kontakt')">Kontakt</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Arbeiten</h4>
-      <ul>
-        <li><a href="#" onclick="showSection('portfolio');filterPortfolio('malerei')">Malerei</a></li>
-        <li><a href="#" onclick="showSection('portfolio');filterPortfolio('collage')">Collage</a></li>
-        <li><a href="#" onclick="showSection('portfolio');filterPortfolio('installation')">Installation</a></li>
-        <li><a href="#" onclick="showSection('portfolio');filterPortfolio('zeichnung')">Zeichnung</a></li>
-      </ul>
-    </div>
-    <div class="footer-col">
-      <h4>Rechtliches</h4>
-      <ul>
-        <li><a href="#">Impressum</a></li>
-        <li><a href="#">Datenschutz</a></li>
-        <li><a href="#">Cookie-Einstellungen</a></li>
-      </ul>
-    </div>
-  </div>
-  <div class="footer-bottom">
-    <span>© 2025 X — meinewebsite.de</span>
-    <div class="social-links">
-      <a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a>
-      <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
-    </div>
-  </div>
-</footer>
-
-<!-- Lightbox -->
-<div id="lightbox" role="dialog" aria-label="Werk-Detailansicht">
-  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Schließen">✕</button>
-  <div id="lightbox-content"></div>
 </div>
 
 <script>
-  // ── Cursor ──
-  const cur = document.getElementById('cursor');
-  const ring = document.getElementById('cursor-ring');
-  document.addEventListener('mousemove', e => {
-    cur.style.left  = e.clientX + 'px';
-    cur.style.top   = e.clientY + 'px';
-    ring.style.left = e.clientX + 'px';
-    ring.style.top  = e.clientY + 'px';
-  });
-  document.querySelectorAll('a,button,.portfolio-item,.filter-btn').forEach(el => {
-    el.addEventListener('mouseenter', () => {
-      cur.style.transform  = 'translate(-50%,-50%) scale(1.8)';
-      ring.style.width  = '54px'; ring.style.height = '54px';
+const PLANTS = [{"id": 1, "svgX": 286.69012, "svgY": 115.08128, "nameDe": "Olivenkraut", "nameBot": "Santolina viridis", "emoji": "🌿", "desc": "Mediterranes Würzkraut mit Olivenaroma.", "water": "Wenig", "light": "Volle Sonne", "nutrients": "Kein Dünger", "special": "Winterhart · Bienenfreundlich · Immergrün"}, {"id": 2, "svgX": 303.23901, "svgY": 109.239, "nameDe": "Griechischer Bergtee", "nameBot": "Sideritis scardica", "emoji": "🌿", "desc": "Aromatischer Tee aus dem Balkan.", "water": "Wenig", "light": "Volle Sonne", "nutrients": "Kein Dünger", "special": "Winterhart · Heilpflanze · Tee"}, {"id": 3, "svgX": 320.23901, "svgY": 92.238998, "nameDe": "Herzgespann", "nameBot": "Leonurus cardiaca", "emoji": "🌿", "desc": "Heilpflanze für Herz und Kreislauf.", "water": "Regelmäßig", "light": "Sonne bis Halbschatten", "nutrients": "Kompost", "special": "Winterhart · Heilpflanze · Bienenweide"}, {"id": 4, "svgX": 336.06238, "svgY": 105.7879, "nameDe": "Pfefferminze", "nameBot": "Mentha × piperita", "emoji": "🌱", "desc": "Klassiker für Tee. Wuchert stark.", "water": "Regelmäßig", "light": "Halbschatten", "nutrients": "Kompost", "special": "Winterhart · Mehrjährig · Wuchert"}, {"id": 5, "svgX": 364.23901, "svgY": 99.238998, "nameDe": "Verbene", "nameBot": "Aloysia citrodora", "emoji": "🌿", "desc": "Zitronenverbene, herrlicher Tee.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Kräuterdünger", "special": "Nicht winterhart · Aromatisch"}, {"id": 6, "svgX": 356.26843, "svgY": 107.26841, "nameDe": "Currykraut", "nameBot": "Helichrysum italicum", "emoji": "🌿", "desc": "Mediterran, duftet nach Curry.", "water": "Wenig", "light": "Volle Sonne", "nutrients": "Kein Dünger", "special": "Winterhart bedingt · Immergrün"}, {"id": 7, "svgX": 361.23901, "svgY": 92.238998, "nameDe": "Mexikanische Riesentagetes", "nameBot": "Tagetes lemmonii", "emoji": "🌼", "desc": "Großwüchsig, gelbe duftende Blüten.", "water": "Wenig", "light": "Volle Sonne", "nutrients": "Wenig", "special": "Nicht winterhart · Bienenfreundlich"}, {"id": 8, "svgX": 378.74637, "svgY": 104.29782, "nameDe": "Melisse", "nameBot": "Melissa officinalis", "emoji": "🌿", "desc": "Zitronenmelisse, beruhigend als Tee.", "water": "Regelmäßig", "light": "Sonne bis Halbschatten", "nutrients": "Kompost", "special": "Winterhart · Heilpflanze · Bienenmagnet"}, {"id": 9, "svgX": 298.0, "svgY": 255.0, "nameDe": "Stachelbeere", "nameBot": "Ribes uva-crispa", "emoji": "🍇", "desc": "Süß-säuerlich, mit Dornen.", "water": "Wöchentlich", "light": "Sonne bis Halbschatten", "nutrients": "Kompost", "special": "Winterhart · Essbar · Dornen"}, {"id": 10, "svgX": 290.28409, "svgY": 141.0, "nameDe": "Kugeldistel", "nameBot": "Echinops ritro", "emoji": "🟣", "desc": "Stahlblaue Kugelblüten, Magnet für Hummeln.", "water": "Trockenheitsresistent", "light": "Volle Sonne", "nutrients": "Wenig", "special": "Winterhart · Bienenmagnet · Trockenstandort"}, {"id": 11, "svgX": 334.74164, "svgY": 270.08853, "nameDe": "Johannisbeere", "nameBot": "Ribes rubrum", "emoji": "🍇", "desc": "Rote Trauben im Juli.", "water": "Wöchentlich", "light": "Sonne bis Halbschatten", "nutrients": "Kompost", "special": "Winterhart · Essbar"}, {"id": 12, "svgX": 379.9079, "svgY": 287.69376, "nameDe": "Stachelbeere", "nameBot": "Ribes uva-crispa", "emoji": "🍇", "desc": "Süß-säuerlich, mit Dornen.", "water": "Wöchentlich", "light": "Sonne bis Halbschatten", "nutrients": "Kompost", "special": "Winterhart · Essbar · Dornen"}, {"id": 13, "svgX": 425.73804, "svgY": 313.0, "nameDe": "Heidelbeere", "nameBot": "Vaccinium corymbosum", "emoji": "🫐", "desc": "Saurer Boden nötig. Blaue Beeren.", "water": "Wöchentlich kalkfrei", "light": "Sonne bis Halbschatten", "nutrients": "Rhododendrondünger", "special": "Winterhart · Saurer Boden · Essbar"}, {"id": 14, "svgX": 429.96075, "svgY": 408.33331, "nameDe": "Stachelbeere", "nameBot": "Ribes uva-crispa", "emoji": "🍇", "desc": "Süß-säuerlich, mit Dornen.", "water": "Wöchentlich", "light": "Sonne bis Halbschatten", "nutrients": "Kompost", "special": "Winterhart · Essbar · Dornen"}, {"id": 15, "svgX": 427.96075, "svgY": 468.27457, "nameDe": "Johannisbeere", "nameBot": "Ribes rubrum", "emoji": "🍇", "desc": "Rote Trauben im Juli.", "water": "Wöchentlich", "light": "Sonne bis Halbschatten", "nutrients": "Kompost", "special": "Winterhart · Essbar"}, {"id": 16, "svgX": 416.96075, "svgY": 515.35297, "nameDe": "Johannisbeere", "nameBot": "Ribes rubrum", "emoji": "🍇", "desc": "Rote Trauben im Juli.", "water": "Wöchentlich", "light": "Sonne bis Halbschatten", "nutrients": "Kompost", "special": "Winterhart · Essbar"}, {"id": 17, "svgX": 397.0, "svgY": 563.0, "nameDe": "Heidelbeere", "nameBot": "Vaccinium corymbosum", "emoji": "🫐", "desc": "Saurer Boden nötig. Blaue Beeren.", "water": "Wöchentlich kalkfrei", "light": "Sonne bis Halbschatten", "nutrients": "Rhododendrondünger", "special": "Winterhart · Saurer Boden · Essbar"}, {"id": 18, "svgX": 377.82654, "svgY": 600.0849, "nameDe": "Gojibeere", "nameBot": "Lycium barbarum", "emoji": "🫐", "desc": "Superfood-Beeren, vitaminreich.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost", "special": "Winterhart · Essbar · Wuchert"}, {"id": 19, "svgX": 339.41592, "svgY": 691.99469, "nameDe": "Szchuanpeffer", "nameBot": "Zanthoxylum simulans", "emoji": "🌶️", "desc": "Asiatisches Gewürz, prickelnd-zitronig.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost", "special": "Winterhart · Essbar · Dornen"}, {"id": 20, "svgX": 370.64072, "svgY": 925.5354, "nameDe": "Pflaume", "nameBot": "Prunus domestica", "emoji": "🟣", "desc": "Süße dunkle Früchte im Spätsommer.", "water": "Alle 2 Wochen", "light": "Volle Sonne", "nutrients": "Obstdünger", "special": "Winterhart · Bienenfreundlich · Essbar"}, {"id": 21, "svgX": 293.07172, "svgY": 1033.9921, "nameDe": "Flieder", "nameBot": "Syringa vulgaris", "emoji": "🪻", "desc": "Duftende violette Blüten im Mai.", "water": "Bei Trockenheit", "light": "Volle Sonne", "nutrients": "Kompost", "special": "Winterhart · Duftend · Bienenfreundlich"}, {"id": 22, "svgX": 362.67007, "svgY": 1357.1088, "nameDe": "Birne", "nameBot": "Pyrus communis", "emoji": "🍐", "desc": "Süße Früchte im Herbst.", "water": "Alle 2 Wochen", "light": "Volle Sonne", "nutrients": "Obstdünger", "special": "Winterhart · Essbar"}, {"id": 23, "svgX": 324.28009, "svgY": 1446.3715, "nameDe": "Mandelbaeumchen", "nameBot": "Prunus triloba", "emoji": "🌸", "desc": "Mandelbäumchen, rosa Frühlingsblüten.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost", "special": "Winterhart · Frühblüher · Zierstrauch"}, {"id": 24, "svgX": 345.32004, "svgY": 1511.47, "nameDe": "Kirsche", "nameBot": "Prunus avium", "emoji": "🍒", "desc": "Weiße Blüten im April, rote Früchte.", "water": "Alle 2 Wochen", "light": "Volle Sonne", "nutrients": "Obstdünger", "special": "Winterhart · Essbar · Bienenmagnet"}, {"id": 25, "svgX": 461.12009, "svgY": 1555.0199, "nameDe": "Pfingstrose", "nameBot": "Paeonia lactiflora", "emoji": "🌸", "desc": "Üppige duftende Blüten.", "water": "Wöchentlich", "light": "Sonne bis Halbschatten", "nutrients": "Kompost im Herbst", "special": "Winterhart · Langlebig · Duftend"}, {"id": 26, "svgX": 413.23898, "svgY": 101.23897, "nameDe": "Lavendel", "nameBot": "Lavandula angustifolia", "emoji": "🪻", "desc": "Mediterran, violette Blüten Juni-August.", "water": "Trockenheitsresistent", "light": "Volle Sonne", "nutrients": "Kein Dünger", "special": "Winterhart · Bienenfreundlich · Duftend"}, {"id": 27, "svgX": 412.23898, "svgY": 109.23897, "nameDe": "Lavendel", "nameBot": "Lavandula angustifolia", "emoji": "🪻", "desc": "Mediterran, violette Blüten Juni-August.", "water": "Trockenheitsresistent", "light": "Volle Sonne", "nutrients": "Kein Dünger", "special": "Winterhart · Bienenfreundlich · Duftend"}, {"id": 28, "svgX": 407.23898, "svgY": 116.23897, "nameDe": "Lavendel", "nameBot": "Lavandula angustifolia", "emoji": "🪻", "desc": "Mediterran, violette Blüten Juni-August.", "water": "Trockenheitsresistent", "light": "Volle Sonne", "nutrients": "Kein Dünger", "special": "Winterhart · Bienenfreundlich · Duftend"}, {"id": 29, "svgX": 400.23901, "svgY": 98.238968, "nameDe": "Tymian", "nameBot": "Thymus vulgaris", "emoji": "🌿", "desc": "Polsterkraut, sehr aromatisch.", "water": "Wenig", "light": "Volle Sonne", "nutrients": "Kein Dünger", "special": "Winterhart · Bienenfreundlich"}, {"id": 30, "svgX": 389.23901, "svgY": 103.23897, "nameDe": "Salbei", "nameBot": "Salvia officinalis", "emoji": "🌿", "desc": "Silbrige Blätter, violette Blüten.", "water": "Wenig", "light": "Volle Sonne", "nutrients": "Kein Dünger", "special": "Winterhart · Heilpflanze · Immergrün"}, {"id": 31, "svgX": 386.06235, "svgY": 228.78787, "nameDe": "Sonnenblume", "nameBot": "Helianthus annuus", "emoji": "🌻", "desc": "Bis 2,5m hoch, folgt der Sonne.", "water": "Wöchentlich", "light": "Volle Sonne", "nutrients": "Wenig Dünger", "special": "Einjährig · Bienenfreundlich · Vogelfutter"}, {"id": 32, "svgX": 344.06235, "svgY": 189.78787, "nameDe": "Wiesenknopf", "nameBot": "Sanguisorba officinalis", "emoji": "🟣", "desc": "Heimische Wildstaude, rote Blütenkolben.", "water": "Regelmäßig", "light": "Sonne bis Halbschatten", "nutrients": "Wenig", "special": "Winterhart · Heilpflanze · Insektenmagnet"}, {"id": 33, "svgX": 417.06235, "svgY": 229.78787, "nameDe": "Sonnenblume", "nameBot": "Helianthus annuus", "emoji": "🌻", "desc": "Bis 2,5m hoch, folgt der Sonne.", "water": "Wöchentlich", "light": "Volle Sonne", "nutrients": "Wenig Dünger", "special": "Einjährig · Bienenfreundlich · Vogelfutter"}, {"id": 34, "svgX": 420.06235, "svgY": 210.78787, "nameDe": "Sonnenblume", "nameBot": "Helianthus annuus", "emoji": "🌻", "desc": "Bis 2,5m hoch, folgt der Sonne.", "water": "Wöchentlich", "light": "Volle Sonne", "nutrients": "Wenig Dünger", "special": "Einjährig · Bienenfreundlich · Vogelfutter"}, {"id": 35, "svgX": 387.06235, "svgY": 205.78787, "nameDe": "Sonnenblume", "nameBot": "Helianthus annuus", "emoji": "🌻", "desc": "Bis 2,5m hoch, folgt der Sonne.", "water": "Wöchentlich", "light": "Volle Sonne", "nutrients": "Wenig Dünger", "special": "Einjährig · Bienenfreundlich · Vogelfutter"}, {"id": 36, "svgX": 299.10132, "svgY": 1011.8886, "nameDe": "Hibiskus", "nameBot": "Hibiscus syriacus", "emoji": "🌺", "desc": "Garten-Eibisch mit großen Sommerblüten.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Kompost im Frühjahr", "special": "Winterhart · Bienenfreundlich · Spätblüher"}, {"id": 37, "svgX": 415.98834, "svgY": 1001.9407, "nameDe": "Pfirsich", "nameBot": "Prunus persica", "emoji": "🍑", "desc": "Süße Früchte im Sommer.", "water": "Wöchentlich", "light": "Volle Sonne", "nutrients": "Obstdünger", "special": "Winterhart bedingt · Essbar"}, {"id": 38, "svgX": 318.04736, "svgY": 594.36212, "nameDe": "Spargel", "nameBot": "Asparagus officinalis", "emoji": "🌱", "desc": "Mehrjährig, Ernte ab Jahr 3.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Kompost im Herbst", "special": "Winterhart · Mehrjährig · Essbar"}, {"id": 39, "svgX": 304.37045, "svgY": 594.59052, "nameDe": "Spargel", "nameBot": "Asparagus officinalis", "emoji": "🌱", "desc": "Mehrjährig, Ernte ab Jahr 3.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Kompost im Herbst", "special": "Winterhart · Mehrjährig · Essbar"}, {"id": 40, "svgX": 290.89136, "svgY": 594.23395, "nameDe": "Spargel", "nameBot": "Asparagus officinalis", "emoji": "🌱", "desc": "Mehrjährig, Ernte ab Jahr 3.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Kompost im Herbst", "special": "Winterhart · Mehrjährig · Essbar"}, {"id": 41, "svgX": 298.28278, "svgY": 825.28278, "nameDe": "Rhodendron", "nameBot": "Rhododendron sp.", "emoji": "🌺", "desc": "Üppige Blüten im Mai. Saurer Boden.", "water": "Regelmäßig kalkfrei", "light": "Halbschatten", "nutrients": "Rhododendrondünger", "special": "Winterhart · Immergrün · Saurer Boden"}, {"id": 42, "svgX": 463.98196, "svgY": 520.37952, "nameDe": "Kornelkirsche", "nameBot": "Cornus mas", "emoji": "🍒", "desc": "Frühe gelbe Blüten, rote Früchte.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost", "special": "Winterhart · Essbar · Frühblüher"}, {"id": 43, "svgX": 439.75443, "svgY": 1032.5809, "nameDe": "Berberitze", "nameBot": "Berberis vulgaris", "emoji": "🍒", "desc": "Rote Beeren, vitaminreich.", "water": "Mäßig", "light": "Sonne bis Halbschatten", "nutrients": "Kompost", "special": "Winterhart · Essbar · Dornen"}, {"id": 44, "svgX": 287.45245, "svgY": 1020.3568, "nameDe": "Preiselbeere", "nameBot": "Vaccinium vitis-idaea", "emoji": "🔴", "desc": "Immergrün, säuerlich-aromatische rote Beeren.", "water": "Wöchentlich kalkfrei", "light": "Sonne bis Halbschatten", "nutrients": "Rhododendrondünger", "special": "Winterhart · Essbar · Saurer Boden · Immergrün"}, {"id": 45, "svgX": 455.97906, "svgY": 891.12146, "nameDe": "Sauerampfer", "nameBot": "Rumex acetosa", "emoji": "🌿", "desc": "Säuerliche Blätter, perfekt für Suppen und Salate.", "water": "Regelmäßig", "light": "Sonne bis Halbschatten", "nutrients": "Kompost", "special": "Winterhart · Mehrjährig · Essbar · Vitamin C"}, {"id": 46, "svgX": 372.42529, "svgY": 672.1601, "nameDe": "Zierquitte", "nameBot": "Chaenomeles japonica", "emoji": "🍐", "desc": "Schöne Blüten, aromatische Früchte.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost", "special": "Winterhart · Essbar"}, {"id": 47, "svgX": 446.66776, "svgY": 159.09073, "nameDe": "Feige", "nameBot": "Ficus carica", "emoji": "🍃", "desc": "Mediterrane Pflanze, kann in Berlin Früchte tragen.", "water": "Wöchentlich", "light": "Volle Sonne", "nutrients": "Obstdünger im Frühjahr", "special": "Frostempfindlich · Essbar · Mediterran"}, {"id": 48, "svgX": 356.54294, "svgY": 855.1601, "nameDe": "Parueckenstrauch", "nameBot": "Cotinus coggygria", "emoji": "🌳", "desc": "Wolkige Blütenstände wie Perücken.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost", "special": "Winterhart · Herbstfärbung"}, {"id": 49, "svgX": 292.36444, "svgY": 941.37238, "nameDe": "Holunder", "nameBot": "Sambucus nigra", "emoji": "🫐", "desc": "Weiße Blütendolden, schwarze Beeren.", "water": "Mäßig", "light": "Sonne bis Halbschatten", "nutrients": "Kompost", "special": "Winterhart · Essbar (verarbeitet)"}, {"id": 50, "svgX": 462.79047, "svgY": 1047.3221, "nameDe": "Weigelie", "nameBot": "Weigela florida", "emoji": "🌸", "desc": "Blühstrauch mit rosa Trichterblüten im Frühsommer.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost", "special": "Winterhart · Bienenfreundlich · Zierstrauch"}, {"id": 51, "svgX": 396.23901, "svgY": 119.239, "nameDe": "Bohnekraut", "nameBot": "Satureja hortensis", "emoji": "🌿", "desc": "Passt zu Bohnen und Eintöpfen.", "water": "Wenig", "light": "Volle Sonne", "nutrients": "Kein Dünger", "special": "Einjährig · Bienenfreundlich"}, {"id": 52, "svgX": 392.23901, "svgY": 110.239, "nameDe": "Bronzefenchel", "nameBot": "Foeniculum vulgare", "emoji": "🌿", "desc": "Anisaroma, dekorativ.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost", "special": "Winterhart · Bienenfreundlich · Essbar"}, {"id": 53, "svgX": 287.23901, "svgY": 100.239, "nameDe": "Schnittlauch", "nameBot": "Allium schoenoprasum", "emoji": "🌿", "desc": "Pflegeleicht, rosa Blüten.", "water": "Wöchentlich", "light": "Sonne bis Halbschatten", "nutrients": "Kompost", "special": "Winterhart · Mehrjährig"}, {"id": 54, "svgX": 286.88571, "svgY": 120.43459, "nameDe": "Olivenkraut", "nameBot": "Santolina viridis", "emoji": "🌿", "desc": "Mediterranes Würzkraut mit Olivenaroma.", "water": "Wenig", "light": "Volle Sonne", "nutrients": "Kein Dünger", "special": "Winterhart · Bienenfreundlich · Immergrün"}, {"id": 55, "svgX": 285.0, "svgY": 169.0, "nameDe": "Anemone", "nameBot": "Anemone hupehensis", "emoji": "🌸", "desc": "Herbstanemone, zarte Blüten August-Oktober.", "water": "Regelmäßig", "light": "Halbschatten", "nutrients": "Kompost im Frühjahr", "special": "Winterhart · Herbstblüher · Bienenweide"}, {"id": 56, "svgX": 286.13629, "svgY": 202.71591, "nameDe": "Margaritte", "nameBot": "Leucanthemum vulgare", "emoji": "🌼", "desc": "Klassische Wiesenmargerite, weiß-gelb.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Wenig", "special": "Winterhart · Bienenweide · Schnittblume"}, {"id": 57, "svgX": 371.54291, "svgY": 713.23853, "nameDe": "Zierquitte", "nameBot": "Chaenomeles japonica", "emoji": "🍐", "desc": "Schöne Blüten, aromatische Früchte.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost", "special": "Winterhart · Essbar"}, {"id": 58, "svgX": 312.54291, "svgY": 797.23853, "nameDe": "Zierquitte", "nameBot": "Chaenomeles japonica", "emoji": "🍐", "desc": "Schöne Blüten, aromatische Früchte.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost", "special": "Winterhart · Essbar"}, {"id": 59, "svgX": 429.01382, "svgY": 1601.0031, "nameDe": "Rose", "nameBot": "Rosa hybrid", "emoji": "🌹", "desc": "Klassische Gartenrose, Blüten Juni-Oktober.", "water": "Wöchentlich", "light": "Volle Sonne", "nutrients": "Rosendünger monatlich", "special": "Winterhart · Duftend · Schnittblume"}, {"id": 60, "svgX": 391.91544, "svgY": 828.75964, "nameDe": "Dahlien", "nameBot": "Dahlia pinnata", "emoji": "💐", "desc": "Pompöse Blüten August bis Frost.", "water": "Täglich", "light": "Volle Sonne", "nutrients": "Dahlien-Dünger alle 2 Wochen", "special": "Nicht winterhart · Knollen einlagern · Schnittblume"}, {"id": 61, "svgX": 444.17761, "svgY": 877.12146, "nameDe": "Waldgeistbart", "nameBot": "Aruncus dioicus", "emoji": "🌿", "desc": "Waldgeißbart, große weiße Blütenrispen im Juni.", "water": "Regelmäßig", "light": "Halbschatten", "nutrients": "Kompost", "special": "Winterhart · Strukturstaude · Schattenpflanze"}, {"id": 62, "svgX": 296.50537, "svgY": 1019.5481, "nameDe": "Preiselbeere", "nameBot": "Vaccinium vitis-idaea", "emoji": "🔴", "desc": "Immergrün, säuerlich-aromatische rote Beeren.", "water": "Wöchentlich kalkfrei", "light": "Sonne bis Halbschatten", "nutrients": "Rhododendrondünger", "special": "Winterhart · Essbar · Saurer Boden · Immergrün"}, {"id": 63, "svgX": 457, "svgY": 975, "nameDe": "Meis", "nameBot": "Zea mays", "emoji": "🌽", "desc": "Hoch wachsend, dekorativ und essbar.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Stark zehrend", "special": "Einjährig · Essbar · Sichtschutz"}, {"id": 64, "svgX": 468, "svgY": 975, "nameDe": "Meis", "nameBot": "Zea mays", "emoji": "🌽", "desc": "Hoch wachsend, dekorativ und essbar.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Stark zehrend", "special": "Einjährig · Essbar · Sichtschutz"}, {"id": 65, "svgX": 457, "svgY": 993, "nameDe": "Meis", "nameBot": "Zea mays", "emoji": "🌽", "desc": "Hoch wachsend, dekorativ und essbar.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Stark zehrend", "special": "Einjährig · Essbar · Sichtschutz"}, {"id": 66, "svgX": 468, "svgY": 993, "nameDe": "Meis", "nameBot": "Zea mays", "emoji": "🌽", "desc": "Hoch wachsend, dekorativ und essbar.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Stark zehrend", "special": "Einjährig · Essbar · Sichtschutz"}, {"id": 67, "svgX": 457, "svgY": 1011, "nameDe": "Meis", "nameBot": "Zea mays", "emoji": "🌽", "desc": "Hoch wachsend, dekorativ und essbar.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Stark zehrend", "special": "Einjährig · Essbar · Sichtschutz"}, {"id": 68, "svgX": 468, "svgY": 1011, "nameDe": "Meis", "nameBot": "Zea mays", "emoji": "🌽", "desc": "Hoch wachsend, dekorativ und essbar.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Stark zehrend", "special": "Einjährig · Essbar · Sichtschutz"}, {"id": 69, "svgX": 457, "svgY": 1029, "nameDe": "Meis", "nameBot": "Zea mays", "emoji": "🌽", "desc": "Hoch wachsend, dekorativ und essbar.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Stark zehrend", "special": "Einjährig · Essbar · Sichtschutz"}, {"id": 70, "svgX": 468, "svgY": 1029, "nameDe": "Meis", "nameBot": "Zea mays", "emoji": "🌽", "desc": "Hoch wachsend, dekorativ und essbar.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Stark zehrend", "special": "Einjährig · Essbar · Sichtschutz"}, {"id": 71, "svgX": 457, "svgY": 1047, "nameDe": "Meis", "nameBot": "Zea mays", "emoji": "🌽", "desc": "Hoch wachsend, dekorativ und essbar.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Stark zehrend", "special": "Einjährig · Essbar · Sichtschutz"}, {"id": 72, "svgX": 468, "svgY": 1047, "nameDe": "Meis", "nameBot": "Zea mays", "emoji": "🌽", "desc": "Hoch wachsend, dekorativ und essbar.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Stark zehrend", "special": "Einjährig · Essbar · Sichtschutz"}, {"id": 73, "svgX": 457, "svgY": 1065, "nameDe": "Mais", "nameBot": "Zea mays", "emoji": "🌽", "desc": "Hoch wachsend, dekorativ und essbar.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Stark zehrend", "special": "Einjährig · Essbar · Sichtschutz"}, {"id": 74, "svgX": 468, "svgY": 1065, "nameDe": "Meis", "nameBot": "Zea mays", "emoji": "🌽", "desc": "Hoch wachsend, dekorativ und essbar.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Stark zehrend", "special": "Einjährig · Essbar · Sichtschutz"}, {"id": 75, "svgX": 457, "svgY": 1083, "nameDe": "Meis", "nameBot": "Zea mays", "emoji": "🌽", "desc": "Hoch wachsend, dekorativ und essbar.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Stark zehrend", "special": "Einjährig · Essbar · Sichtschutz"}, {"id": 76, "svgX": 457, "svgY": 1135, "nameDe": "Ackerbohne", "nameBot": "Vicia faba", "emoji": "🫘", "desc": "Eiweißreich, fixiert Stickstoff im Boden.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Wenig (Stickstoffsammler)", "special": "Einjährig · Bodenverbesserer · Essbar"}, {"id": 77, "svgX": 468, "svgY": 1135, "nameDe": "Ackerbohne", "nameBot": "Vicia faba", "emoji": "🫘", "desc": "Eiweißreich, fixiert Stickstoff im Boden.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Wenig (Stickstoffsammler)", "special": "Einjährig · Bodenverbesserer · Essbar"}, {"id": 78, "svgX": 457, "svgY": 1149, "nameDe": "Ackerbohne", "nameBot": "Vicia faba", "emoji": "🫘", "desc": "Eiweißreich, fixiert Stickstoff im Boden.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Wenig (Stickstoffsammler)", "special": "Einjährig · Bodenverbesserer · Essbar"}, {"id": 79, "svgX": 468, "svgY": 1149, "nameDe": "Ackerbohne", "nameBot": "Vicia faba", "emoji": "🫘", "desc": "Eiweißreich, fixiert Stickstoff im Boden.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Wenig (Stickstoffsammler)", "special": "Einjährig · Bodenverbesserer · Essbar"}, {"id": 80, "svgX": 457, "svgY": 1163, "nameDe": "Ackerbohne", "nameBot": "Vicia faba", "emoji": "🫘", "desc": "Eiweißreich, fixiert Stickstoff im Boden.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Wenig (Stickstoffsammler)", "special": "Einjährig · Bodenverbesserer · Essbar"}, {"id": 81, "svgX": 468, "svgY": 1163, "nameDe": "Ackerbohne", "nameBot": "Vicia faba", "emoji": "🫘", "desc": "Eiweißreich, fixiert Stickstoff im Boden.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Wenig (Stickstoffsammler)", "special": "Einjährig · Bodenverbesserer · Essbar"}, {"id": 82, "svgX": 457, "svgY": 1177, "nameDe": "Ackerbohne", "nameBot": "Vicia faba", "emoji": "🫘", "desc": "Eiweißreich, fixiert Stickstoff im Boden.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Wenig (Stickstoffsammler)", "special": "Einjährig · Bodenverbesserer · Essbar"}, {"id": 83, "svgX": 468, "svgY": 1177, "nameDe": "Ackerbohne", "nameBot": "Vicia faba", "emoji": "🫘", "desc": "Eiweißreich, fixiert Stickstoff im Boden.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Wenig (Stickstoffsammler)", "special": "Einjährig · Bodenverbesserer · Essbar"}, {"id": 84, "svgX": 457, "svgY": 1191, "nameDe": "Ackerbohne", "nameBot": "Vicia faba", "emoji": "🫘", "desc": "Eiweißreich, fixiert Stickstoff im Boden.", "water": "Regelmäßig", "light": "Volle Sonne", "nutrients": "Wenig (Stickstoffsammler)", "special": "Einjährig · Bodenverbesserer · Essbar"}, {"id": 85, "svgX": 468.4468579848009, "svgY": 1316.4229753951054, "nameDe": "Knoblauch", "nameBot": "Allium sativum", "emoji": "🧄", "desc": "Im Herbst stecken, im Sommer ernten. Aromatische Knollen.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost im Herbst", "special": "Winterhart · Essbar · Heilpflanze"}, {"id": 86, "svgX": 465.9726987777227, "svgY": 1341.1147707496734, "nameDe": "Knoblauch", "nameBot": "Allium sativum", "emoji": "🧄", "desc": "Im Herbst stecken, im Sommer ernten. Aromatische Knollen.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost im Herbst", "special": "Winterhart · Essbar · Heilpflanze"}, {"id": 87, "svgX": 463.9809912113216, "svgY": 1365.8038952206898, "nameDe": "Knoblauch", "nameBot": "Allium sativum", "emoji": "🧄", "desc": "Im Herbst stecken, im Sommer ernten. Aromatische Knollen.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost im Herbst", "special": "Winterhart · Essbar · Heilpflanze"}, {"id": 88, "svgX": 462.7284424417494, "svgY": 1390.4889276607, "nameDe": "Knoblauch", "nameBot": "Allium sativum", "emoji": "🧄", "desc": "Im Herbst stecken, im Sommer ernten. Aromatische Knollen.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost im Herbst", "special": "Winterhart · Essbar · Heilpflanze"}, {"id": 89, "svgX": 462.3826061654378, "svgY": 1415.168940481581, "nameDe": "Knoblauch", "nameBot": "Allium sativum", "emoji": "🧄", "desc": "Im Herbst stecken, im Sommer ernten. Aromatische Knollen.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost im Herbst", "special": "Winterhart · Essbar · Heilpflanze"}, {"id": 90, "svgX": 463.00167317048056, "svgY": 1439.843611535359, "nameDe": "Knoblauch", "nameBot": "Allium sativum", "emoji": "🧄", "desc": "Im Herbst stecken, im Sommer ernten. Aromatische Knollen.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost im Herbst", "special": "Winterhart · Essbar · Heilpflanze"}, {"id": 91, "svgX": 464.52745266878406, "svgY": 1464.513262970008, "nameDe": "Knoblauch", "nameBot": "Allium sativum", "emoji": "🧄", "desc": "Im Herbst stecken, im Sommer ernten. Aromatische Knollen.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost im Herbst", "special": "Winterhart · Essbar · Heilpflanze"}, {"id": 92, "svgX": 466.7923909639163, "svgY": 1489.178822373651, "nameDe": "Knoblauch", "nameBot": "Allium sativum", "emoji": "🧄", "desc": "Im Herbst stecken, im Sommer ernten. Aromatische Knollen.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost im Herbst", "special": "Winterhart · Essbar · Heilpflanze"}, {"id": 93, "svgX": 469.53978089972566, "svgY": 1513.8417108937422, "nameDe": "Knoblauch", "nameBot": "Allium sativum", "emoji": "🧄", "desc": "Im Herbst stecken, im Sommer ernten. Aromatische Knollen.", "water": "Mäßig", "light": "Volle Sonne", "nutrients": "Kompost im Herbst", "special": "Winterhart · Essbar · Heilpflanze"}];
+const svg = document.getElementById('bgsvg');
+const wrap = document.getElementById('garden-wrap');
+const canvas = document.getElementById('garden-canvas');
+const SVGNS = 'http://www.w3.org/2000/svg';
+
+let pz = {s:1, x:0, y:0};
+let panState = null;
+let query = '';
+
+function drawMarkers(){
+  let overlay = svg.querySelector('#markers');
+  if(!overlay){
+    overlay = document.createElementNS(SVGNS, 'g');
+    overlay.setAttribute('id', 'markers');
+    svg.appendChild(overlay);
+  }
+  overlay.innerHTML = '';
+  const q = query.toLowerCase();
+  let shown = 0;
+  PLANTS.forEach(p => {
+    const matches = !q || p.nameDe.toLowerCase().includes(q) || p.nameBot.toLowerCase().includes(q);
+    const g = document.createElementNS(SVGNS, 'g');
+    g.setAttribute('class', 'marker');
+    g.setAttribute('transform', `translate(${p.svgX},${p.svgY})`);
+    g.style.opacity = matches ? '1' : '0.15';
+    g.dataset.id = p.id;
+
+    const halo = document.createElementNS(SVGNS, 'circle');
+    halo.setAttribute('class', 'halo');
+    halo.setAttribute('r', '14');
+    halo.setAttribute('fill', 'rgba(45,106,31,.15)');
+    halo.setAttribute('stroke', '#2d6a1f');
+    halo.setAttribute('stroke-width', '1.2');
+    g.appendChild(halo);
+
+    const bg = document.createElementNS(SVGNS, 'circle');
+    bg.setAttribute('class', 'bg-circle');
+    bg.setAttribute('r', '8');
+    g.appendChild(bg);
+
+    const txt = document.createElementNS(SVGNS, 'text');
+    txt.setAttribute('class', 'emoji');
+    txt.setAttribute('font-size', '11');
+    txt.textContent = p.emoji;
+    g.appendChild(txt);
+
+    g.addEventListener('click', e => {
+      e.stopPropagation();
+      if(matches) openPanel(p);
     });
-    el.addEventListener('mouseleave', () => {
-      cur.style.transform  = 'translate(-50%,-50%) scale(1)';
-      ring.style.width  = '36px'; ring.style.height = '36px';
-    });
+
+    overlay.appendChild(g);
+    if(matches) shown++;
   });
+  document.getElementById('status').textContent = `${shown} Pflanzen`;
+}
 
-  // ── Nav scroll ──
-  window.addEventListener('scroll', () => {
-    document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 40);
-  });
+function openPanel(p){
+  document.getElementById('phero').textContent = p.emoji;
+  document.getElementById('pname').textContent = p.nameDe;
+  document.getElementById('pbot').textContent = p.nameBot;
+  document.getElementById('pdesc').textContent = p.desc;
+  document.getElementById('cgrid').innerHTML = [
+    ['💧 Gießbedarf', p.water],
+    ['☀️ Licht', p.light],
+    ['🌱 Nährstoffe', p.nutrients]
+  ].map(([l,v]) => `<div class="cc"><div class="ccl">${l}</div><div class="ccv">${v}</div></div>`).join('') +
+  `<div class="cc ccs"><div class="ccl">✨ Besonderheiten</div><div class="ccv">${p.special}</div></div>`;
+  document.getElementById('panel').classList.add('open');
+}
 
-  // ── Section switching ──
-  function showSection(id) {
-    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
-    const el = document.getElementById(id);
-    if (el) { el.classList.add('active'); window.scrollTo(0,0); }
-    document.querySelectorAll('.nav-links a').forEach(a => {
-      a.classList.toggle('active', a.dataset.section === id);
-    });
-    // close mobile menu
-    document.getElementById('navLinks').classList.remove('open');
-    return false;
+document.getElementById('pclose').addEventListener('click', () => {
+  document.getElementById('panel').classList.remove('open');
+});
+
+document.getElementById('search').addEventListener('input', e => {
+  query = e.target.value;
+  drawMarkers();
+});
+
+// === Smooth pan ===
+function applyT(){ canvas.style.transform = `translate(${pz.x}px,${pz.y}px) scale(${pz.s})`; }
+
+wrap.addEventListener('mousedown', e => {
+  if(e.target.closest('.marker')) return;
+  panState = {sx:e.clientX, sy:e.clientY, ox:pz.x, oy:pz.y};
+});
+window.addEventListener('mousemove', e => {
+  if(!panState) return;
+  pz.x = panState.ox + (e.clientX - panState.sx);
+  pz.y = panState.oy + (e.clientY - panState.sy);
+  applyT();
+});
+window.addEventListener('mouseup', () => { panState = null; });
+
+// Touch
+let tStart = null, tDist = 0, tInitS = 1, tCenter = null;
+wrap.addEventListener('touchstart', e => {
+  if(e.target.closest('.marker')) return;
+  if(e.touches.length === 1){
+    tStart = {sx:e.touches[0].clientX, sy:e.touches[0].clientY, ox:pz.x, oy:pz.y};
+  } else if(e.touches.length === 2){
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    tDist = Math.hypot(dx, dy);
+    tInitS = pz.s;
+    tCenter = {x:(e.touches[0].clientX+e.touches[1].clientX)/2, y:(e.touches[0].clientY+e.touches[1].clientY)/2};
   }
+}, {passive:false});
 
-  // ── Mobile menu ──
-  function toggleMenu() {
-    document.getElementById('navLinks').classList.toggle('open');
-  }
-
-  // ── Portfolio filter ──
-  function filterPortfolio(cat, btn) {
-    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-    if (btn) btn.classList.add('active');
-    document.querySelectorAll('.portfolio-item').forEach(item => {
-      const show = cat === 'alle' || item.dataset.cat === cat;
-      item.style.display = show ? '' : 'none';
-    });
-  }
-
-  // ── Lightbox ──
-  const artClasses = {
-    'art-1':'background:linear-gradient(135deg,#4a3728 0%,#8B6F47 40%,#C4A35A 100%)',
-    'art-2':'background:linear-gradient(200deg,#2d2a26 0%,#5c4a3a 60%,#8B6F47 100%)',
-    'art-3':'background:linear-gradient(45deg,#1a1714 0%,#3d3428 50%,#6b5a40 100%)',
-    'art-4':'background:linear-gradient(160deg,#3a2e24 0%,#7a6248 100%)',
-    'art-5':'background:linear-gradient(90deg,#2a2220 0%,#584838 50%,#9e8060 100%)',
-    'art-6':'background:linear-gradient(220deg,#1e1b18 0%,#4a3c2c 50%,#7a6248 100%)',
-    'art-7':'background:linear-gradient(135deg,#352b22 0%,#6e5840 40%,#c4a35a 100%)',
-    'art-8':'background:linear-gradient(180deg,#241e18 0%,#5a4835 50%,#8c7254 100%)'
-  };
-  function openLightbox(title, desc, artClass) {
-    const lb = document.getElementById('lightbox');
-    document.getElementById('lightbox-content').innerHTML =
-      `<div class="lightbox-art" style="${artClasses[artClass] || ''}"></div>
-       <h2>${title}</h2><p>${desc}</p>`;
-    lb.classList.add('open');
-    document.body.style.overflow = 'hidden';
-  }
-  function closeLightbox() {
-    document.getElementById('lightbox').classList.remove('open');
-    document.body.style.overflow = '';
-  }
-  document.getElementById('lightbox').addEventListener('click', e => {
-    if (e.target === e.currentTarget) closeLightbox();
-  });
-  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
-
-  // ── Contact form ──
-  function handleForm(e) {
+wrap.addEventListener('touchmove', e => {
+  if(e.touches.length === 2 && tDist){
     e.preventDefault();
-    document.getElementById('form-success').style.display = 'block';
-    e.target.reset();
-    setTimeout(() => { document.getElementById('form-success').style.display = 'none'; }, 5000);
+    const dx = e.touches[0].clientX - e.touches[1].clientX;
+    const dy = e.touches[0].clientY - e.touches[1].clientY;
+    const nd = Math.hypot(dx, dy);
+    pz.s = Math.max(.2, Math.min(6, tInitS * (nd/tDist)));
+    applyT();
+  } else if(tStart && e.touches.length === 1){
+    e.preventDefault();
+    pz.x = tStart.ox + (e.touches[0].clientX - tStart.sx);
+    pz.y = tStart.oy + (e.touches[0].clientY - tStart.sy);
+    applyT();
   }
+}, {passive:false});
+
+wrap.addEventListener('touchend', () => { tStart = null; tDist = 0; });
+
+wrap.addEventListener('wheel', e => {
+  e.preventDefault();
+  const r = wrap.getBoundingClientRect();
+  const px = e.clientX - r.left, py = e.clientY - r.top;
+  const factor = e.deltaY < 0 ? 1.12 : 0.89;
+  const newS = Math.max(.2, Math.min(6, pz.s * factor));
+  // Zoom towards cursor
+  pz.x = px - (px - pz.x) * (newS/pz.s);
+  pz.y = py - (py - pz.y) * (newS/pz.s);
+  pz.s = newS;
+  applyT();
+}, {passive:false});
+
+document.getElementById('zi').addEventListener('click', () => {
+  const cx = wrap.clientWidth/2, cy = wrap.clientHeight/2;
+  const factor = 1.25;
+  const newS = Math.min(6, pz.s * factor);
+  pz.x = cx - (cx - pz.x) * (newS/pz.s);
+  pz.y = cy - (cy - pz.y) * (newS/pz.s);
+  pz.s = newS;
+  applyT();
+});
+document.getElementById('zo').addEventListener('click', () => {
+  const cx = wrap.clientWidth/2, cy = wrap.clientHeight/2;
+  const factor = 0.8;
+  const newS = Math.max(.2, pz.s * factor);
+  pz.x = cx - (cx - pz.x) * (newS/pz.s);
+  pz.y = cy - (cy - pz.y) * (newS/pz.s);
+  pz.s = newS;
+  applyT();
+});
+document.getElementById('zr').addEventListener('click', center);
+
+function center(){
+  const vb = svg.getAttribute('viewBox').split(' ').map(Number);
+  const svgW = vb[2], svgH = vb[3];
+  svg.style.width = svgW + 'px';
+  svg.style.height = svgH + 'px';
+  const cw = wrap.clientWidth, ch = wrap.clientHeight;
+  pz.s = Math.min((cw-30)/svgW, (ch-30)/svgH);
+  pz.x = (cw - svgW*pz.s)/2;
+  pz.y = (ch - svgH*pz.s)/2;
+  applyT();
+}
+
+drawMarkers();
+center();
+window.addEventListener('resize', center);
 </script>
 </body>
 </html>
