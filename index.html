@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="X – Bildende Künstlerin. Portfolio, Ausstellungen und Kontakt.">
+  <meta name="keywords" content="Kunst, Künstlerin, Portfolio, Ausstellungen, X">
+  <meta property="og:title" content="X – Künstlerin">
+  <meta property="og:description" content="Bildende Künstlerin. Portfolio, Ausstellungen und Kontakt.">
+  <meta property="og:url" content="https://meinewebsite.de">
+  <title>X — Künstlerin</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --cream: #F5F0E8;
+      --ink:   #1A1714;
+      --warm:  #8B6F47;
+      --gold:  #C4A35A;
+      --light: #EDE8DE;
+      --muted: #7A7269;
+      --serif: 'Cormorant Garamond', Georgia, serif;
+      --sans:  'DM Sans', sans-serif;
+    }
+
+    html { scroll-behavior: smooth; font-size: 16px; }
+
+    body {
+      background: var(--cream);
+      color: var(--ink);
+      font-family: var(--sans);
+      font-weight: 300;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+
+    /* ── CURSOR ── */
+    body { cursor: none; }
+    #cursor {
+      position: fixed; width: 10px; height: 10px;
+      border-radius: 50%; background: var(--gold);
+      pointer-events: none; z-index: 9999;
+      transition: transform .15s ease, opacity .2s;
+      transform: translate(-50%, -50%);
+    }
+    #cursor-ring {
+      position: fixed; width: 36px; height: 36px;
+      border-radius: 50%; border: 1px solid var(--gold);
+      pointer-events: none; z-index: 9998;
+      transition: transform .35s ease, width .2s, height .2s, opacity .2s;
+      transform: translate(-50%, -50%);
+      opacity: 0.5;
+    }
+    a:hover ~ #cursor, button:hover ~ #cursor { transform: translate(-50%,-50%) scale(2); }
+
+    /* ── NOISE OVERLAY ── */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.04'/%3E%3C/svg%3E");
+      pointer-events: none; z-index: 0; opacity: 0.4;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 1.5rem 3rem;
+      display: flex; align-items: center; justify-content: space-between;
+      background: rgba(245,240,232,0.85);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid rgba(196,163,90,0.2);
+      transition: padding .3s;
+    }
+    nav.scrolled { padding: 1rem 3rem; }
+    .nav-logo {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 300;
+      letter-spacing: 0.08em;
+      color: var(--ink);
+      text-decoration: none;
+      font-style: italic;
+    }
+    .nav-links { display: flex; gap: 2.5rem; list-style: none; }
+    .nav-links a {
+      font-family: var(--sans);
+      font-size: 0.8rem;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--muted);
+      text-decoration: none;
+      position: relative;
+      transition: color .25s;
+    }
+    .nav-links a::after {
+      content: ''; position: absolute; bottom: -3px; left: 0;
+      width: 0; height: 1px; background: var(--gold);
+      transition: width .3s ease;
+    }
+    .nav-links a:hover, .nav-links a.active { color: var(--ink); }
+    .nav-links a:hover::after, .nav-links a.active::after { width: 100%; }
+
+    /* Hamburger (mobile) */
+    .nav-burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; background: none; border: none; }
+    .nav-burger span { display: block; width: 22px; height: 1px; background: var(--ink); transition: .3s; }
+
+    /* ── SECTIONS ── */
+    section { display: none; }
+    section.active { display: block; }
+
+    /* ── HERO ── */
+    #home {
+      min-height: 100vh;
+      display: flex; flex-direction: column;
+      justify-content: flex-end;
+      padding: 0 3rem 5rem;
+      position: relative;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute; inset: 0;
+      background:
+        radial-gradient(ellipse 60% 80% at 70% 40%, rgba(196,163,90,0.12) 0%, transparent 70%),
+        radial-gradient(ellipse 40% 60% at 20% 80%, rgba(139,111,71,0.08) 0%, transparent 60%);
+    }
+    .hero-line {
+      position: absolute; top: 0; left: 50%;
+      width: 1px; height: 0; background: var(--gold);
+      animation: lineDown 1.4s ease forwards .3s;
+    }
+    @keyframes lineDown { to { height: 35%; } }
+
+    .hero-eyebrow {
+      font-size: 0.72rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 1.5rem;
+      opacity: 0; animation: fadeUp .8s ease forwards .8s;
+    }
+    .hero-title {
+      font-family: var(--serif);
+      font-size: clamp(4rem, 10vw, 9rem);
+      font-weight: 300;
+      line-height: 0.92;
+      letter-spacing: -0.02em;
+      margin-bottom: 2rem;
+      opacity: 0; animation: fadeUp .9s ease forwards 1s;
+    }
+    .hero-title em { font-style: italic; color: var(--warm); display: block; }
+    .hero-sub {
+      font-size: 1rem; color: var(--muted); max-width: 400px;
+      margin-bottom: 3rem;
+      opacity: 0; animation: fadeUp .8s ease forwards 1.2s;
+    }
+    .hero-cta {
+      display: inline-flex; align-items: center; gap: 1rem;
+      font-size: 0.78rem; letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--ink); text-decoration: none;
+      opacity: 0; animation: fadeUp .8s ease forwards 1.4s;
+    }
+    .hero-cta::after {
+      content: ''; display: block; width: 48px; height: 1px; background: var(--gold);
+      transition: width .4s;
+    }
+    .hero-cta:hover::after { width: 80px; }
+
+    .hero-scroll {
+      position: absolute; right: 3rem; bottom: 4rem;
+      writing-mode: vertical-lr; font-size: 0.65rem;
+      letter-spacing: 0.2em; text-transform: uppercase;
+      color: var(--muted); display: flex; align-items: center; gap: 12px;
+      opacity: 0; animation: fadeIn 1s ease forwards 2s;
+    }
+    .hero-scroll::before {
+      content: ''; display: block; width: 1px; height: 40px; background: var(--gold);
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse { 0%,100%{opacity:.4} 50%{opacity:1} }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(30px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+    /* ── PORTFOLIO ── */
+    #portfolio { padding: 8rem 3rem 6rem; min-height: 100vh; }
+    .section-header { margin-bottom: 4rem; }
+    .section-number {
+      font-size: 0.65rem; letter-spacing: 0.25em; text-transform: uppercase;
+      color: var(--gold); margin-bottom: .6rem;
+    }
+    .section-title {
+      font-family: var(--serif);
+      font-size: clamp(2.5rem, 5vw, 4rem);
+      font-weight: 300; font-style: italic;
+    }
+    .section-sub {
+      font-size: 0.88rem; color: var(--muted);
+      margin-top: .6rem;
+    }
+
+    .filter-bar {
+      display: flex; gap: 1rem; flex-wrap: wrap;
+      margin-bottom: 3rem;
+    }
+    .filter-btn {
+      font-family: var(--sans); font-size: 0.75rem;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      padding: .45rem 1.2rem;
+      border: 1px solid rgba(196,163,90,0.4);
+      background: transparent; color: var(--muted);
+      border-radius: 999px; cursor: pointer;
+      transition: all .25s;
+    }
+    .filter-btn:hover, .filter-btn.active {
+      background: var(--gold); border-color: var(--gold);
+      color: var(--cream);
+    }
+
+    .portfolio-grid {
+      display: grid;
+      grid-template-columns: repeat(12, 1fr);
+      gap: 1.5rem;
+    }
+    .portfolio-item {
+      position: relative; overflow: hidden;
+      background: var(--light);
+      cursor: pointer;
+      transition: transform .4s ease;
+    }
+    .portfolio-item:hover { transform: translateY(-4px); }
+    .portfolio-item:nth-child(1) { grid-column: span 7; grid-row: span 2; }
+    .portfolio-item:nth-child(2) { grid-column: span 5; }
+    .portfolio-item:nth-child(3) { grid-column: span 5; }
+    .portfolio-item:nth-child(4) { grid-column: span 4; }
+    .portfolio-item:nth-child(5) { grid-column: span 4; }
+    .portfolio-item:nth-child(6) { grid-column: span 4; }
+    .portfolio-item:nth-child(7) { grid-column: span 6; }
+    .portfolio-item:nth-child(8) { grid-column: span 6; }
+
+    .portfolio-img {
+      width: 100%; aspect-ratio: 4/3;
+      object-fit: cover; display: block;
+      transition: transform .6s ease, filter .4s;
+      filter: saturate(0.85) sepia(0.1);
+    }
+    .portfolio-item:nth-child(1) .portfolio-img { aspect-ratio: 3/4; height: 100%; }
+    .portfolio-item:hover .portfolio-img {
+      transform: scale(1.04);
+      filter: saturate(1) sepia(0);
+    }
+
+    .portfolio-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(to top, rgba(26,23,20,0.8) 0%, transparent 50%);
+      opacity: 0; transition: opacity .4s;
+      display: flex; flex-direction: column;
+      justify-content: flex-end; padding: 1.5rem;
+    }
+    .portfolio-item:hover .portfolio-overlay { opacity: 1; }
+    .portfolio-overlay h3 {
+      font-family: var(--serif); font-size: 1.2rem;
+      font-weight: 300; color: var(--cream); font-style: italic;
+    }
+    .portfolio-overlay p {
+      font-size: 0.72rem; letter-spacing: 0.1em;
+      text-transform: uppercase; color: var(--gold);
+      margin-top: .3rem;
+    }
+
+    /* Art placeholder colors */
+    .art-1 { background: linear-gradient(135deg, #4a3728 0%, #8B6F47 40%, #C4A35A 100%); }
+    .art-2 { background: linear-gradient(200deg, #2d2a26 0%, #5c4a3a 60%, #8B6F47 100%); }
+    .art-3 { background: linear-gradient(45deg, #1a1714 0%, #3d3428 50%, #6b5a40 100%); }
+    .art-4 { background: linear-gradient(160deg, #3a2e24 0%, #7a6248 100%); }
+    .art-5 { background: linear-gradient(90deg, #2a2220 0%, #584838 50%, #9e8060 100%); }
+    .art-6 { background: linear-gradient(220deg, #1e1b18 0%, #4a3c2c 50%, #7a6248 100%); }
+    .art-7 { background: linear-gradient(135deg, #352b22 0%, #6e5840 40%, #c4a35a 100%); }
+    .art-8 { background: linear-gradient(180deg, #241e18 0%, #5a4835 50%, #8c7254 100%); }
+
+    .art-placeholder {
+      width: 100%; aspect-ratio: 4/3;
+      display: flex; align-items: center; justify-content: center;
+      position: relative; overflow: hidden;
+    }
+    .portfolio-item:nth-child(1) .art-placeholder { aspect-ratio: unset; height: 100%; min-height: 400px; }
+    .art-placeholder svg { opacity: 0.18; width: 40%; }
+
+    /* ── AUSSTELLUNGEN ── */
+    #ausstellungen { padding: 8rem 3rem 6rem; min-height: 100vh; }
+    .exhibitions-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 6rem; align-items: start; }
+
+    .ex-group-title {
+      font-size: 0.65rem; letter-spacing: 0.25em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 2rem;
+      display: flex; align-items: center; gap: 1rem;
+    }
+    .ex-group-title::after { content: ''; flex: 1; height: 1px; background: rgba(196,163,90,0.3); }
+
+    .ex-item {
+      display: grid; grid-template-columns: 80px 1fr;
+      gap: 1.5rem; padding: 1.5rem 0;
+      border-bottom: 1px solid rgba(26,23,20,0.08);
+      transition: padding .25s;
+    }
+    .ex-item:hover { padding-left: .5rem; }
+    .ex-item:last-child { border-bottom: none; }
+
+    .ex-date {
+      font-family: var(--serif); font-size: 1.8rem;
+      font-weight: 300; color: var(--gold);
+      line-height: 1; padding-top: .2rem;
+    }
+    .ex-date span { display: block; font-size: 0.7rem; font-family: var(--sans); color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: .2rem; }
+
+    .ex-info h3 {
+      font-family: var(--serif); font-size: 1.2rem;
+      font-weight: 400; margin-bottom: .3rem; font-style: italic;
+    }
+    .ex-info .venue {
+      font-size: 0.8rem; color: var(--muted);
+      display: flex; align-items: center; gap: .5rem;
+    }
+    .ex-info .venue::before { content: ''; display: block; width: 16px; height: 1px; background: var(--gold); }
+    .ex-badge {
+      display: inline-block; margin-top: .5rem;
+      font-size: 0.65rem; letter-spacing: 0.1em; text-transform: uppercase;
+      padding: .2rem .7rem; border-radius: 999px;
+    }
+    .badge-upcoming { background: rgba(196,163,90,0.15); color: var(--gold); border: 1px solid rgba(196,163,90,0.4); }
+    .badge-solo     { background: rgba(139,111,71,0.12); color: var(--warm); border: 1px solid rgba(139,111,71,0.3); }
+    .badge-group    { background: rgba(26,23,20,0.06); color: var(--muted); border: 1px solid rgba(26,23,20,0.12); }
+
+    /* ── ÜBER ── */
+    #ueber { padding: 8rem 3rem 6rem; min-height: 100vh; }
+    .about-layout {
+      display: grid; grid-template-columns: 5fr 7fr; gap: 8rem; align-items: start;
+    }
+    .about-portrait {
+      position: sticky; top: 8rem;
+    }
+    .portrait-frame {
+      aspect-ratio: 3/4; background: var(--light);
+      position: relative; overflow: hidden;
+    }
+    .portrait-art {
+      width: 100%; height: 100%;
+      background: linear-gradient(160deg, #2d2520 0%, #5e4a35 45%, #9e8060 100%);
+      display: flex; align-items: center; justify-content: center;
+    }
+    .portrait-art svg { opacity: 0.15; width: 50%; }
+    .portrait-caption {
+      margin-top: 1rem; font-size: 0.72rem; color: var(--muted);
+      letter-spacing: 0.08em;
+    }
+    .portrait-frame::after {
+      content: ''; position: absolute;
+      bottom: -12px; right: -12px;
+      width: 60%; height: 60%;
+      border: 1px solid rgba(196,163,90,0.4);
+      z-index: -1;
+    }
+
+    .about-text blockquote {
+      font-family: var(--serif); font-size: clamp(1.4rem, 2.5vw, 2rem);
+      font-weight: 300; font-style: italic;
+      line-height: 1.4; color: var(--warm);
+      border-left: 2px solid var(--gold);
+      padding-left: 2rem; margin-bottom: 2.5rem;
+    }
+    .about-text p {
+      font-size: 0.95rem; color: var(--muted);
+      margin-bottom: 1.2rem; line-height: 1.8;
+    }
+    .about-text p strong { color: var(--ink); font-weight: 400; }
+
+    .cv-section { margin-top: 3rem; }
+    .cv-year {
+      display: grid; grid-template-columns: 60px 1fr;
+      gap: 1rem; padding: .6rem 0;
+      font-size: 0.85rem;
+      border-bottom: 1px solid rgba(26,23,20,0.06);
+    }
+    .cv-year:last-child { border-bottom: none; }
+    .cv-year .year { color: var(--gold); font-family: var(--serif); font-size: 1rem; }
+    .cv-year .desc { color: var(--muted); }
+    .cv-year .desc strong { color: var(--ink); font-weight: 400; display: block; }
+
+    /* ── KONTAKT ── */
+    #kontakt { padding: 8rem 3rem 6rem; min-height: 80vh; }
+    .contact-layout {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 8rem;
+    }
+    .contact-intro { }
+    .contact-intro p { font-size: 0.9rem; color: var(--muted); margin-bottom: 2rem; }
+    .contact-details { list-style: none; margin-top: 3rem; }
+    .contact-details li {
+      display: flex; gap: 1rem; align-items: baseline;
+      padding: 1rem 0;
+      border-bottom: 1px solid rgba(26,23,20,0.08);
+      font-size: 0.85rem;
+    }
+    .contact-details .label {
+      font-size: 0.65rem; letter-spacing: 0.15em;
+      text-transform: uppercase; color: var(--gold);
+      min-width: 90px;
+    }
+    .contact-details a { color: var(--ink); text-decoration: none; transition: color .2s; }
+    .contact-details a:hover { color: var(--warm); }
+
+    /* Form */
+    .contact-form { }
+    .form-group { margin-bottom: 1.5rem; }
+    .form-group label {
+      display: block; font-size: 0.68rem;
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--muted); margin-bottom: .6rem;
+    }
+    .form-group input,
+    .form-group textarea,
+    .form-group select {
+      width: 100%; background: transparent;
+      border: none; border-bottom: 1px solid rgba(26,23,20,0.2);
+      padding: .6rem 0; font-family: var(--sans);
+      font-size: 0.9rem; color: var(--ink);
+      outline: none; transition: border-color .25s;
+      appearance: none;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus,
+    .form-group select:focus { border-color: var(--gold); }
+    .form-group textarea { resize: none; height: 100px; }
+    .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; }
+
+    .submit-btn {
+      display: inline-flex; align-items: center; gap: 1rem;
+      font-family: var(--sans); font-size: 0.78rem;
+      letter-spacing: 0.15em; text-transform: uppercase;
+      background: var(--ink); color: var(--cream);
+      border: none; padding: 1rem 2.5rem;
+      cursor: pointer; transition: background .25s, gap .3s;
+      margin-top: 1rem;
+    }
+    .submit-btn:hover { background: var(--warm); gap: 1.6rem; }
+    .submit-btn::after { content: '→'; }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--ink); color: var(--cream);
+      padding: 4rem 3rem 2rem;
+    }
+    .footer-top {
+      display: grid; grid-template-columns: 2fr 1fr 1fr 1fr;
+      gap: 4rem; margin-bottom: 3rem;
+      padding-bottom: 3rem;
+      border-bottom: 1px solid rgba(245,240,232,0.08);
+    }
+    .footer-logo {
+      font-family: var(--serif); font-size: 2.5rem;
+      font-weight: 300; font-style: italic; color: var(--cream);
+      margin-bottom: 1rem;
+    }
+    .footer-tagline { font-size: 0.82rem; color: rgba(245,240,232,0.45); }
+    .footer-col h4 {
+      font-size: 0.65rem; letter-spacing: 0.2em;
+      text-transform: uppercase; color: var(--gold);
+      margin-bottom: 1.2rem;
+    }
+    .footer-col ul { list-style: none; }
+    .footer-col li { margin-bottom: .6rem; }
+    .footer-col a {
+      font-size: 0.82rem; color: rgba(245,240,232,0.55);
+      text-decoration: none; transition: color .2s;
+    }
+    .footer-col a:hover { color: var(--cream); }
+    .footer-bottom {
+      display: flex; justify-content: space-between;
+      align-items: center; flex-wrap: wrap; gap: 1rem;
+      font-size: 0.72rem; color: rgba(245,240,232,0.3);
+    }
+    .social-links { display: flex; gap: 1.5rem; }
+    .social-links a {
+      font-size: 0.72rem; letter-spacing: 0.12em;
+      text-transform: uppercase; color: rgba(245,240,232,0.4);
+      text-decoration: none; transition: color .2s;
+    }
+    .social-links a:hover { color: var(--gold); }
+
+    /* ── LIGHTBOX ── */
+    #lightbox {
+      position: fixed; inset: 0; z-index: 1000;
+      background: rgba(26,23,20,0.95);
+      display: none; align-items: center; justify-content: center;
+      padding: 3rem;
+    }
+    #lightbox.open { display: flex; }
+    #lightbox-content {
+      max-width: 700px; width: 100%; text-align: center;
+    }
+    .lightbox-art {
+      width: 100%; aspect-ratio: 4/3;
+      margin-bottom: 1.5rem;
+    }
+    #lightbox h2 {
+      font-family: var(--serif); font-size: 1.6rem;
+      font-weight: 300; font-style: italic; color: var(--cream);
+      margin-bottom: .4rem;
+    }
+    #lightbox p { font-size: 0.8rem; color: var(--gold); letter-spacing: 0.1em; }
+    .lightbox-close {
+      position: absolute; top: 2rem; right: 2rem;
+      background: none; border: 1px solid rgba(245,240,232,0.2);
+      color: var(--cream); width: 44px; height: 44px;
+      font-size: 1.2rem; cursor: pointer; border-radius: 50%;
+      transition: background .2s;
+    }
+    .lightbox-close:hover { background: rgba(196,163,90,0.2); }
+
+    /* ── MOBILE ── */
+    @media (max-width: 900px) {
+      nav { padding: 1.2rem 1.5rem; }
+      .nav-links { display: none; flex-direction: column; gap: 1.5rem; position: fixed; inset: 0; background: var(--cream); padding: 6rem 3rem 3rem; z-index: 99; }
+      .nav-links.open { display: flex; }
+      .nav-burger { display: flex; }
+      #home { padding: 0 1.5rem 4rem; }
+      .hero-title { font-size: clamp(3rem, 12vw, 5rem); }
+      #portfolio, #ausstellungen, #ueber, #kontakt { padding: 6rem 1.5rem 4rem; }
+      .portfolio-grid { grid-template-columns: 1fr 1fr; }
+      .portfolio-item { grid-column: span 1 !important; grid-row: span 1 !important; }
+      .exhibitions-layout, .about-layout, .contact-layout { grid-template-columns: 1fr; gap: 3rem; }
+      .about-portrait { position: static; }
+      .footer-top { grid-template-columns: 1fr 1fr; gap: 2rem; }
+      .form-row { grid-template-columns: 1fr; }
+      body { cursor: auto; }
+      #cursor, #cursor-ring { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Custom Cursor -->
+<div id="cursor"></div>
+<div id="cursor-ring"></div>
+
+<!-- Navigation -->
+<nav id="mainNav">
+  <a class="nav-logo" href="#" onclick="showSection('home')">X</a>
+  <ul class="nav-links" id="navLinks">
+    <li><a href="#" onclick="showSection('home')"     class="active" data-section="home">Start</a></li>
+    <li><a href="#" onclick="showSection('portfolio')"           data-section="portfolio">Portfolio</a></li>
+    <li><a href="#" onclick="showSection('ausstellungen')"       data-section="ausstellungen">Ausstellungen</a></li>
+    <li><a href="#" onclick="showSection('ueber')"               data-section="ueber">Über mich</a></li>
+    <li><a href="#" onclick="showSection('kontakt')"             data-section="kontakt">Kontakt</a></li>
+  </ul>
+  <button class="nav-burger" id="burger" aria-label="Menü öffnen" onclick="toggleMenu()">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+
+<!-- ═══ HOME ═══ -->
+<section id="home" class="active">
+  <div class="hero-bg"></div>
+  <div class="hero-line"></div>
+  <p class="hero-eyebrow">Bildende Künstlerin · Berlin</p>
+  <h1 class="hero-title">
+    Zwischen<br>
+    <em>Stille &amp;<br>Bewegung</em>
+  </h1>
+  <p class="hero-sub">Malerei, Collage und Installation — Werke an der Grenze von Abstraktion und Erinnerung.</p>
+  <a class="hero-cta" href="#" onclick="showSection('portfolio')">Portfolio entdecken</a>
+  <div class="hero-scroll" aria-hidden="true">Scrollen</div>
+</section>
+
+<!-- ═══ PORTFOLIO ═══ -->
+<section id="portfolio">
+  <div class="section-header">
+    <div class="section-number">02 / Arbeiten</div>
+    <h2 class="section-title">Portfolio</h2>
+    <p class="section-sub">Ausgewählte Werke 2018 – 2025</p>
+  </div>
+
+  <div class="filter-bar">
+    <button class="filter-btn active" onclick="filterPortfolio('alle', this)">Alle</button>
+    <button class="filter-btn" onclick="filterPortfolio('malerei', this)">Malerei</button>
+    <button class="filter-btn" onclick="filterPortfolio('collage', this)">Collage</button>
+    <button class="filter-btn" onclick="filterPortfolio('installation', this)">Installation</button>
+    <button class="filter-btn" onclick="filterPortfolio('zeichnung', this)">Zeichnung</button>
+  </div>
+
+  <div class="portfolio-grid" id="portfolioGrid">
+
+    <div class="portfolio-item" data-cat="malerei" onclick="openLightbox('Schichtung I', 'Acryl auf Leinwand · 200 × 160 cm · 2024', 'art-1')">
+      <div class="art-placeholder art-1">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="30" fill="none" stroke="#fff" stroke-width="0.5"/><line x1="20" y1="50" x2="80" y2="50" stroke="#fff" stroke-width="0.5"/><line x1="50" y1="20" x2="50" y2="80" stroke="#fff" stroke-width="0.5"/><path d="M30 30 Q50 10 70 30 Q90 50 70 70 Q50 90 30 70 Q10 50 30 30Z" fill="none" stroke="#fff" stroke-width="0.3"/></svg>
+      </div>
+      <div class="portfolio-overlay"><h3>Schichtung I</h3><p>Malerei · 2024</p></div>
+    </div>
+
+    <div class="portfolio-item" data-cat="collage" onclick="openLightbox('Archiv der Stille', 'Mixed Media auf Papier · 90 × 70 cm · 2023', 'art-2')">
+      <div class="art-placeholder art-2">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><rect x="20" y="20" width="60" height="60" fill="none" stroke="#fff" stroke-width="0.5"/><rect x="30" y="30" width="40" height="40" fill="none" stroke="#fff" stroke-width="0.3"/><line x1="20" y1="20" x2="80" y2="80" stroke="#fff" stroke-width="0.3"/></svg>
+      </div>
+      <div class="portfolio-overlay"><h3>Archiv der Stille</h3><p>Collage · 2023</p></div>
+    </div>
+
+    <div class="portfolio-item" data-cat="zeichnung" onclick="openLightbox('Drift', 'Kohle auf Bütten · 120 × 90 cm · 2023', 'art-3')">
+      <div class="art-placeholder art-3">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10 90 Q30 10 50 50 Q70 90 90 10" fill="none" stroke="#fff" stroke-width="0.5"/><path d="M10 70 Q30 30 50 60 Q70 80 90 30" fill="none" stroke="#fff" stroke-width="0.3" opacity="0.5"/></svg>
+      </div>
+      <div class="portfolio-overlay"><h3>Drift</h3><p>Zeichnung · 2023</p></div>
+    </div>
+
+    <div class="portfolio-item" data-cat="installation" onclick="openLightbox('Raumgedicht', 'Installation · variable Maße · 2022', 'art-4')">
+      <div class="art-placeholder art-4">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><polygon points="50,10 90,90 10,90" fill="none" stroke="#fff" stroke-width="0.5"/><polygon points="50,30 75,80 25,80" fill="none" stroke="#fff" stroke-width="0.3"/></svg>
+      </div>
+      <div class="portfolio-overlay"><h3>Raumgedicht</h3><p>Installation · 2022</p></div>
+    </div>
+
+    <div class="portfolio-item" data-cat="malerei" onclick="openLightbox('Ascheland', 'Öl auf Leinwand · 150 × 120 cm · 2022', 'art-5')">
+      <div class="art-placeholder art-5">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="40" fill="none" stroke="#fff" stroke-width="0.5"/><circle cx="50" cy="50" r="25" fill="none" stroke="#fff" stroke-width="0.3"/><circle cx="50" cy="50" r="10" fill="rgba(255,255,255,0.1)" stroke="#fff" stroke-width="0.3"/></svg>
+      </div>
+      <div class="portfolio-overlay"><h3>Ascheland</h3><p>Malerei · 2022</p></div>
+    </div>
+
+    <div class="portfolio-item" data-cat="collage" onclick="openLightbox('Fragment II', 'Collage, Fotografie · 60 × 60 cm · 2021', 'art-6')">
+      <div class="art-placeholder art-6">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="100" y2="100" stroke="#fff" stroke-width="0.4"/><line x1="100" y1="0" x2="0" y2="100" stroke="#fff" stroke-width="0.4"/><rect x="30" y="30" width="40" height="40" fill="rgba(255,255,255,0.05)" stroke="#fff" stroke-width="0.3"/></svg>
+      </div>
+      <div class="portfolio-overlay"><h3>Fragment II</h3><p>Collage · 2021</p></div>
+    </div>
+
+    <div class="portfolio-item" data-cat="malerei" onclick="openLightbox('Goldener Schnitt', 'Acryl, Blattgold · 180 × 140 cm · 2021', 'art-7')">
+      <div class="art-placeholder art-7">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10 50 L50 10 L90 50 L50 90Z" fill="none" stroke="#fff" stroke-width="0.5"/><path d="M30 50 L50 30 L70 50 L50 70Z" fill="rgba(255,255,255,0.1)" stroke="#fff" stroke-width="0.3"/></svg>
+      </div>
+      <div class="portfolio-overlay"><h3>Goldener Schnitt</h3><p>Malerei · 2021</p></div>
+    </div>
+
+    <div class="portfolio-item" data-cat="zeichnung" onclick="openLightbox('Bleistiftlandschaft', 'Bleistift auf Papier · 100 × 70 cm · 2020', 'art-8')">
+      <div class="art-placeholder art-8">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg"><path d="M10 80 Q25 20 50 40 Q75 60 90 20" fill="none" stroke="#fff" stroke-width="0.5"/><path d="M10 90 Q40 50 70 70 Q85 78 90 60" fill="none" stroke="#fff" stroke-width="0.3" opacity="0.6"/></svg>
+      </div>
+      <div class="portfolio-overlay"><h3>Bleistiftlandschaft</h3><p>Zeichnung · 2020</p></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ═══ AUSSTELLUNGEN ═══ -->
+<section id="ausstellungen">
+  <div class="section-header">
+    <div class="section-number">03 / Veranstaltungen</div>
+    <h2 class="section-title">Ausstellungen</h2>
+    <p class="section-sub">Vergangene und kommende Präsentationen</p>
+  </div>
+
+  <div class="exhibitions-layout">
+    <!-- Kommend -->
+    <div>
+      <div class="ex-group-title">Kommende Ausstellungen</div>
+
+      <div class="ex-item">
+        <div class="ex-date">Jun<span>2025</span></div>
+        <div class="ex-info">
+          <h3>Zwischen den Zeilen</h3>
+          <div class="venue">Galerie Nord, Berlin</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">6. Juni – 4. Juli 2025<br>Vernissage: Fr, 6. Juni, 19 Uhr</div>
+          <span class="ex-badge badge-upcoming">Bald · Solo</span>
+        </div>
+      </div>
+
+      <div class="ex-item">
+        <div class="ex-date">Sep<span>2025</span></div>
+        <div class="ex-info">
+          <h3>Material &amp; Erinnerung</h3>
+          <div class="venue">Kunsthalle Bremen, Bremen</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">12. September – 2. November 2025</div>
+          <span class="ex-badge badge-group">Gruppenausstellung</span>
+        </div>
+      </div>
+
+      <div class="ex-item">
+        <div class="ex-date">Jan<span>2026</span></div>
+        <div class="ex-info">
+          <h3>Zeitfenster</h3>
+          <div class="venue">Galerie Wien Mitte, Wien</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">Eröffnung voraussichtlich Jan. 2026</div>
+          <span class="ex-badge badge-upcoming">Geplant · Solo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Vergangen -->
+    <div>
+      <div class="ex-group-title">Vergangene Ausstellungen</div>
+
+      <div class="ex-item">
+        <div class="ex-date">2024<span>Nov</span></div>
+        <div class="ex-info">
+          <h3>Schicht um Schicht</h3>
+          <div class="venue">Projektraum 44, Hamburg</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">Nov. – Dez. 2024</div>
+          <span class="ex-badge badge-solo">Einzelausstellung</span>
+        </div>
+      </div>
+
+      <div class="ex-item">
+        <div class="ex-date">2024<span>Mar</span></div>
+        <div class="ex-info">
+          <h3>Art Berlin Open Studios</h3>
+          <div class="venue">Atelierhaus Kreuzberg, Berlin</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">März 2024</div>
+          <span class="ex-badge badge-group">Gruppenausstellung</span>
+        </div>
+      </div>
+
+      <div class="ex-item">
+        <div class="ex-date">2023<span>Sep</span></div>
+        <div class="ex-info">
+          <h3>Stille Wasser</h3>
+          <div class="venue">Museum Folkwang, Essen</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">Sep. – Nov. 2023</div>
+          <span class="ex-badge badge-group">Gruppenausstellung</span>
+        </div>
+      </div>
+
+      <div class="ex-item">
+        <div class="ex-date">2022<span>Jun</span></div>
+        <div class="ex-info">
+          <h3>Raumgedicht</h3>
+          <div class="venue">Galerie Nord, Berlin</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">Jun. – Aug. 2022</div>
+          <span class="ex-badge badge-solo">Einzelausstellung</span>
+        </div>
+      </div>
+
+      <div class="ex-item">
+        <div class="ex-date">2021<span>Okt</span></div>
+        <div class="ex-info">
+          <h3>Junge Positionen</h3>
+          <div class="venue">Kunstverein München</div>
+          <div style="font-size:0.78rem;color:var(--muted);margin-top:.3rem">Okt. 2021</div>
+          <span class="ex-badge badge-group">Gruppenausstellung</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ ÜBER ═══ -->
+<section id="ueber">
+  <div class="section-header">
+    <div class="section-number">04 / Person</div>
+    <h2 class="section-title">Über mich</h2>
+  </div>
+
+  <div class="about-layout">
+    <div class="about-portrait">
+      <div class="portrait-frame">
+        <div class="portrait-art">
+          <svg viewBox="0 0 100 140" xmlns="http://www.w3.org/2000/svg"><ellipse cx="50" cy="45" rx="22" ry="28" fill="none" stroke="#fff" stroke-width="0.5"/><path d="M20 140 Q20 90 50 80 Q80 90 80 140" fill="none" stroke="#fff" stroke-width="0.5"/><circle cx="50" cy="45" r="10" fill="rgba(255,255,255,0.08)"/></svg>
+        </div>
+      </div>
+      <p class="portrait-caption">X im Atelier, Berlin 2024</p>
+    </div>
+
+    <div class="about-text">
+      <blockquote>
+        "Kunst ist für mich das Archiv des Unausgesprochenen — eine Sprache, die dort beginnt, wo Worte aufhören."
+      </blockquote>
+
+      <p><strong>X</strong> ist eine in Berlin lebende und arbeitende Künstlerin, deren Praxis Malerei, Zeichnung, Collage und raumgreifende Installation umfasst. Im Zentrum ihrer Arbeit steht die Auseinandersetzung mit Schichten — materiellen wie emotionalen — und der Frage, was zwischen den Oberflächen verborgen liegt.</p>
+
+      <p>Geboren 1988 in München, studierte sie an der <strong>Hochschule für Bildende Künste Hamburg</strong> (2008–2014) und schloss ihr Masterstudium an der <strong>Städelschule Frankfurt</strong> ab. Seither lebt und arbeitet sie in Berlin-Kreuzberg.</p>
+
+      <p>Ihre Werke wurden in Galerien und Museen in Deutschland, Österreich und der Schweiz gezeigt. Sie ist Trägerin des <strong>Berliner Kunstpreises 2021</strong> und des <strong>Stipendiums der Kulturstiftung des Bundes 2019</strong>.</p>
+
+      <div class="cv-section">
+        <div class="ex-group-title" style="margin-bottom:1.2rem">Vita (Auswahl)</div>
+
+        <div class="cv-year"><span class="year">2024</span><span class="desc"><strong>Projektraum 44, Hamburg</strong> Einzelausstellung „Schicht um Schicht"</span></div>
+        <div class="cv-year"><span class="year">2023</span><span class="desc"><strong>Museum Folkwang, Essen</strong> Gruppenausstellung „Stille Wasser"</span></div>
+        <div class="cv-year"><span class="year">2022</span><span class="desc"><strong>Galerie Nord, Berlin</strong> Einzelausstellung „Raumgedicht"</span></div>
+        <div class="cv-year"><span class="year">2021</span><span class="desc"><strong>Berliner Kunstpreis</strong> Auszeichnung für Bildende Kunst</span></div>
+        <div class="cv-year"><span class="year">2019</span><span class="desc"><strong>Kulturstiftung des Bundes</strong> Jahresstipendium</span></div>
+        <div class="cv-year"><span class="year">2014</span><span class="desc"><strong>Städelschule Frankfurt</strong> Master of Fine Arts</span></div>
+        <div class="cv-year"><span class="year">2008</span><span class="desc"><strong>HfBK Hamburg</strong> Studium Bildende Kunst</span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ KONTAKT ═══ -->
+<section id="kontakt">
+  <div class="section-header">
+    <div class="section-number">05 / Kontakt</div>
+    <h2 class="section-title">Kontakt</h2>
+  </div>
+
+  <div class="contact-layout">
+    <div class="contact-intro">
+      <p>Für Anfragen zu Werken, Ausstellungskooperationen, Workshops oder Presseangelegenheiten stehe ich gerne zur Verfügung.</p>
+      <p>Atelier-Besuche sind nach Vereinbarung möglich.</p>
+
+      <ul class="contact-details">
+        <li><span class="label">E-Mail</span><a href="mailto:hallo@meinewebsite.de">hallo@meinewebsite.de</a></li>
+        <li><span class="label">Telefon</span>+49 (0)30 123 456 78</li>
+        <li><span class="label">Atelier</span>Kreuzberg, Berlin</li>
+        <li><span class="label">Galerie</span><a href="https://galerie-nord.de" target="_blank" rel="noopener">Galerie Nord, Berlin</a></li>
+        <li><span class="label">Instagram</span><a href="https://instagram.com" target="_blank" rel="noopener">@x.kuenstlerin</a></li>
+        <li><span class="label">Impressum</span><a href="#" onclick="showSection('impressum')">Rechtliche Hinweise</a></li>
+      </ul>
+    </div>
+
+    <div class="contact-form">
+      <form onsubmit="handleForm(event)">
+        <div class="form-row">
+          <div class="form-group">
+            <label for="fname">Vorname</label>
+            <input type="text" id="fname" name="fname" placeholder="Anna" required>
+          </div>
+          <div class="form-group">
+            <label for="lname">Nachname</label>
+            <input type="text" id="lname" name="lname" placeholder="Müller" required>
+          </div>
+        </div>
+        <div class="form-group">
+          <label for="email">E-Mail-Adresse</label>
+          <input type="email" id="email" name="email" placeholder="anna@beispiel.de" required>
+        </div>
+        <div class="form-group">
+          <label for="betreff">Betreff</label>
+          <select id="betreff" name="betreff">
+            <option value="">Bitte wählen …</option>
+            <option value="werk">Werkankauf / Werk-Anfrage</option>
+            <option value="ausstellung">Ausstellungskooperation</option>
+            <option value="presse">Presse &amp; Medien</option>
+            <option value="workshop">Workshop / Vortrag</option>
+            <option value="sonstiges">Sonstiges</option>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="nachricht">Nachricht</label>
+          <textarea id="nachricht" name="nachricht" placeholder="Ihre Nachricht …" required></textarea>
+        </div>
+        <div class="form-group" style="font-size:0.75rem;color:var(--muted)">
+          <input type="checkbox" id="dsgvo" required style="width:auto;border:none;margin-right:.5rem">
+          <label for="dsgvo" style="display:inline;font-size:0.75rem;text-transform:none;letter-spacing:0;color:var(--muted)">Ich habe die <a href="#" style="color:var(--warm)">Datenschutzerklärung</a> gelesen und stimme zu.</label>
+        </div>
+        <button type="submit" class="submit-btn">Nachricht senden</button>
+        <div id="form-success" style="display:none;margin-top:1rem;font-size:0.82rem;color:var(--warm)">Vielen Dank! Ihre Nachricht wurde gesendet.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- ═══ FOOTER ═══ -->
+<footer>
+  <div class="footer-top">
+    <div>
+      <div class="footer-logo">X</div>
+      <p class="footer-tagline">Bildende Künstlerin<br>Berlin, Deutschland</p>
+    </div>
+    <div class="footer-col">
+      <h4>Navigation</h4>
+      <ul>
+        <li><a href="#" onclick="showSection('home')">Start</a></li>
+        <li><a href="#" onclick="showSection('portfolio')">Portfolio</a></li>
+        <li><a href="#" onclick="showSection('ausstellungen')">Ausstellungen</a></li>
+        <li><a href="#" onclick="showSection('ueber')">Über mich</a></li>
+        <li><a href="#" onclick="showSection('kontakt')">Kontakt</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Arbeiten</h4>
+      <ul>
+        <li><a href="#" onclick="showSection('portfolio');filterPortfolio('malerei')">Malerei</a></li>
+        <li><a href="#" onclick="showSection('portfolio');filterPortfolio('collage')">Collage</a></li>
+        <li><a href="#" onclick="showSection('portfolio');filterPortfolio('installation')">Installation</a></li>
+        <li><a href="#" onclick="showSection('portfolio');filterPortfolio('zeichnung')">Zeichnung</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Rechtliches</h4>
+      <ul>
+        <li><a href="#">Impressum</a></li>
+        <li><a href="#">Datenschutz</a></li>
+        <li><a href="#">Cookie-Einstellungen</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2025 X — meinewebsite.de</span>
+    <div class="social-links">
+      <a href="https://instagram.com" target="_blank" rel="noopener">Instagram</a>
+      <a href="https://linkedin.com" target="_blank" rel="noopener">LinkedIn</a>
+    </div>
+  </div>
+</footer>
+
+<!-- Lightbox -->
+<div id="lightbox" role="dialog" aria-label="Werk-Detailansicht">
+  <button class="lightbox-close" onclick="closeLightbox()" aria-label="Schließen">✕</button>
+  <div id="lightbox-content"></div>
+</div>
+
+<script>
+  // ── Cursor ──
+  const cur = document.getElementById('cursor');
+  const ring = document.getElementById('cursor-ring');
+  document.addEventListener('mousemove', e => {
+    cur.style.left  = e.clientX + 'px';
+    cur.style.top   = e.clientY + 'px';
+    ring.style.left = e.clientX + 'px';
+    ring.style.top  = e.clientY + 'px';
+  });
+  document.querySelectorAll('a,button,.portfolio-item,.filter-btn').forEach(el => {
+    el.addEventListener('mouseenter', () => {
+      cur.style.transform  = 'translate(-50%,-50%) scale(1.8)';
+      ring.style.width  = '54px'; ring.style.height = '54px';
+    });
+    el.addEventListener('mouseleave', () => {
+      cur.style.transform  = 'translate(-50%,-50%) scale(1)';
+      ring.style.width  = '36px'; ring.style.height = '36px';
+    });
+  });
+
+  // ── Nav scroll ──
+  window.addEventListener('scroll', () => {
+    document.getElementById('mainNav').classList.toggle('scrolled', window.scrollY > 40);
+  });
+
+  // ── Section switching ──
+  function showSection(id) {
+    document.querySelectorAll('section').forEach(s => s.classList.remove('active'));
+    const el = document.getElementById(id);
+    if (el) { el.classList.add('active'); window.scrollTo(0,0); }
+    document.querySelectorAll('.nav-links a').forEach(a => {
+      a.classList.toggle('active', a.dataset.section === id);
+    });
+    // close mobile menu
+    document.getElementById('navLinks').classList.remove('open');
+    return false;
+  }
+
+  // ── Mobile menu ──
+  function toggleMenu() {
+    document.getElementById('navLinks').classList.toggle('open');
+  }
+
+  // ── Portfolio filter ──
+  function filterPortfolio(cat, btn) {
+    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+    document.querySelectorAll('.portfolio-item').forEach(item => {
+      const show = cat === 'alle' || item.dataset.cat === cat;
+      item.style.display = show ? '' : 'none';
+    });
+  }
+
+  // ── Lightbox ──
+  const artClasses = {
+    'art-1':'background:linear-gradient(135deg,#4a3728 0%,#8B6F47 40%,#C4A35A 100%)',
+    'art-2':'background:linear-gradient(200deg,#2d2a26 0%,#5c4a3a 60%,#8B6F47 100%)',
+    'art-3':'background:linear-gradient(45deg,#1a1714 0%,#3d3428 50%,#6b5a40 100%)',
+    'art-4':'background:linear-gradient(160deg,#3a2e24 0%,#7a6248 100%)',
+    'art-5':'background:linear-gradient(90deg,#2a2220 0%,#584838 50%,#9e8060 100%)',
+    'art-6':'background:linear-gradient(220deg,#1e1b18 0%,#4a3c2c 50%,#7a6248 100%)',
+    'art-7':'background:linear-gradient(135deg,#352b22 0%,#6e5840 40%,#c4a35a 100%)',
+    'art-8':'background:linear-gradient(180deg,#241e18 0%,#5a4835 50%,#8c7254 100%)'
+  };
+  function openLightbox(title, desc, artClass) {
+    const lb = document.getElementById('lightbox');
+    document.getElementById('lightbox-content').innerHTML =
+      `<div class="lightbox-art" style="${artClasses[artClass] || ''}"></div>
+       <h2>${title}</h2><p>${desc}</p>`;
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeLightbox() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+  }
+  document.getElementById('lightbox').addEventListener('click', e => {
+    if (e.target === e.currentTarget) closeLightbox();
+  });
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeLightbox(); });
+
+  // ── Contact form ──
+  function handleForm(e) {
+    e.preventDefault();
+    document.getElementById('form-success').style.display = 'block';
+    e.target.reset();
+    setTimeout(() => { document.getElementById('form-success').style.display = 'none'; }, 5000);
+  }
+</script>
+</body>
+</html>
